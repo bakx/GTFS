@@ -2,9 +2,20 @@
 <resources>
 
     <string name="app_name">MiWay</string>
+
+    <!-- Tab Names -->
+    <string name="tab_favorites">Favorites</string>
+    <string name="tab_routes">Routes</string>
+    <string name="tab_stops">Stops</string>
+
+
+    <!-- sort out -->
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
     <string name="action_settings">Settings</string>
+
+    <string name="connection_error">Unable to load content. Check your network connection.</string>
+    <string name="xml_error">Error parsing XML.</string>
 
 </resources>
