@@ -10,7 +10,7 @@ import android.widget.TabHost;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.adapters.RouteAdapter;
+import ca.synx.miway.adapters.ListItemAdapter;
 import ca.synx.miway.models.Route;
 
 public class MainActivity extends Activity {
@@ -39,14 +39,6 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        //if (id == R.id.action_settings) {
-        //    return true;
-        //}
-
         return super.onOptionsItemSelected(item);
     }
 
@@ -85,7 +77,7 @@ public class MainActivity extends Activity {
         routes.add(new Route(1, 10, "101 Dundas Express", "Eastbound"));
         routes.add(new Route(2, 10, "101 Dundas Express", "Westbound"));
 
-        RouteAdapter adapter = new RouteAdapter(routes, this);
+        ListItemAdapter adapter = new ListItemAdapter(routes, this);
         mRoutesListView.setAdapter(adapter);
     }
 }
