@@ -5,15 +5,14 @@ package ca.synx.miway.models;
  */
 public class Route {
 
+    public int routeId;
+    public int routeNumber;
+    public String routeName;
+    public String routeHeading;
     public Route(int routeId, int routeNumber, String routeName, String routeHeading) {
         this.routeId = routeId;
         this.routeNumber = routeNumber;
         this.routeName = routeName;
         this.routeHeading = routeHeading;
     }
-
-    public int routeId;
-    public int routeNumber;
-    public String routeName;
-    public String routeHeading;
 }
