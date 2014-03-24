@@ -20,7 +20,7 @@ public class GTFSDataExchange {
     private String transitCompany;
     private static String GTFS_BASE_URL = "http://miway.dataservices.synx.ca";
     private static String GET_ROUTES_URL = "/api/MiWay/GetRoutes";
-    private static String GET_STOPS_URL = "/api/MiWay/GetStops/{0}/{1}";
+    private static String GET_STOPS_URL = "/api/MiWay/GetStops/%s/%s";
     private static String GET_STOP_TIMES_URL = "/api/MiWay/GetStops/{0}/{1}/{2}";
 
     public GTFSDataExchange(String transitCompany) {

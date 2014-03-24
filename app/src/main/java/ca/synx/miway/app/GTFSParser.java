@@ -45,8 +45,7 @@ public class GTFSParser {
     public static List<Stop> getStops(String data) throws JSONException {
         List<Stop> stops = new ArrayList<Stop>();
 
-        JSONObject jso = new JSONObject(data);
-        JSONArray jsonArray = jso.getJSONArray("Data");
+        JSONArray jsonArray = new JSONArray(data);
 
         for (int i = 0; i < jsonArray.length(); ++i) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);

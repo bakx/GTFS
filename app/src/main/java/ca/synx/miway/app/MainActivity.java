@@ -12,8 +12,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -76,17 +80,13 @@ public class MainActivity extends Activity {
         );
     }
 
-
     protected void initTabs() {
         mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
         mRoutesListView = (ListView) findViewById(R.id.routesListView);
 
-
-        // TODO  check for cache.
-
         // Load online.
         new GTFSRouteTask(this).execute();
-        //  new GTFSStopTask(this).execute();
+        new GTFSStopTask(this).execute();
     }
 
     private class GTFSRouteTask extends AsyncTask<String, Void, List<Route>> {
@@ -118,6 +118,13 @@ public class MainActivity extends Activity {
 
             ListItemAdapter adapter = new ListItemAdapter(routes, context);
             mRoutesListView.setAdapter(adapter);
+            mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    // When clicked, show a toast with the TextView text
+
+                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
     }
 
@@ -141,7 +148,6 @@ public class MainActivity extends Activity {
                 e.printStackTrace();
             }
             return stops;
-
         }
 
         @Override
@@ -151,5 +157,6 @@ public class MainActivity extends Activity {
             ListItemAdapter adapter = new ListItemAdapter(stops, context);
             mFavoritesListView.setAdapter(adapter);
         }
+
     }
 }
