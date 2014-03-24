@@ -8,8 +8,11 @@ package ca.synx.miway.app;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,8 +31,7 @@ import ca.synx.miway.adapters.ListItemAdapter;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 
-public class MainActivity extends Activity {
-
+public class MainActivity extends FragmentActivity  {
 
     TabHost mTabHost;
     ListView mFavoritesListView;
@@ -120,9 +122,28 @@ public class MainActivity extends Activity {
             mRoutesListView.setAdapter(adapter);
             mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    // When clicked, show a toast with the TextView text
 
-                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
+
+                    StopsFragment fragment = new StopsFragment();
+                    Bundle args = new Bundle();
+                    //args.putInt(StopsFragment.ARG_POSITION, position);
+                   // StopsFragment.setArguments(args);
+
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+
+                    // Replace whatever is in the fragment_container view with this fragment,
+                    // and add the transaction to the back stack so the user can navigate back
+                    transaction.replace(R.id.fragment_container, fragment);
+                    transaction.addToBackStack(null);
+
+                    // Commit the transaction
+                    transaction.commit();
+
+
+                    // When clicked, show a toast with the TextView text
+//                    Intent intent = new Intent(context, StopsActivity.class);
+
+//                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
                 }
             });
         }
