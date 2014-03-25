@@ -15,13 +15,16 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import ca.synx.miway.models.Route;
+import ca.synx.miway.models.Stop;
+
 public class GTFSDataExchange {
 
-    private String transitCompany;
     private static String GTFS_BASE_URL = "http://miway.dataservices.synx.ca";
     private static String GET_ROUTES_URL = "/api/MiWay/GetRoutes";
     private static String GET_STOPS_URL = "/api/MiWay/GetStops/%s/%s";
-    private static String GET_STOP_TIMES_URL = "/api/MiWay/GetStops/{0}/{1}/{2}";
+    private static String GET_STOP_TIMES_URL = "/api/MiWay/GetStops/%s/%s/%s";
+    private String transitCompany;
 
     public GTFSDataExchange(String transitCompany) {
         this.transitCompany = transitCompany;
@@ -56,9 +59,15 @@ public class GTFSDataExchange {
         return getData(GTFS_BASE_URL + GET_ROUTES_URL);
     }
 
-    public String getStopsData(String routeNumber, String routeHeading) {
+    public String getStopsData(Route route) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOPS_URL, routeNumber, routeHeading)
+                String.format(GTFS_BASE_URL + GET_STOPS_URL, route.routeNumber, route.routeHeading)
+        );
+    }
+
+    public String getStopTimesData(Stop stop) {
+        return getData(
+                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.route.routeNumber, stop.route.routeHeading, stop.stopId)
         );
     }
 }

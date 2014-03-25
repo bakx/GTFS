@@ -10,17 +10,25 @@ import java.io.Serializable;
 
 import ca.synx.miway.interfaces.IListItem;
 
-/**
- * Created by Gideon on 3/20/14.
- */
 public class StopTime implements IListItem, Serializable {
-    public String arrivalTime, departureTime, stop_id;
+    public String arrivalTime;
+    public String departureTime;
+    public Stop stop;
+
+    public StopTime(String arrivalTime, String departureTime) {
+        this.arrivalTime = arrivalTime;
+        this.departureTime = departureTime;
+    }
+
+    public void setStop(Stop stop) {
+        this.stop = stop;
+    }
 
     public String getTitle() {
-        return "";
+        return departureTime;
     }
 
     public String getSubtitle() {
-        return "";
+        return this.arrivalTime;
     }
 }

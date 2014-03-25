@@ -6,7 +6,6 @@
 
 package ca.synx.miway.app;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -27,6 +26,9 @@ import ca.synx.miway.models.Stop;
 
 public class StopsActivity extends Activity {
 
+    static final String ROUTE_DATA = "routeData";
+
+    Route mRoute;
     ListView mStopsListView;
 
     @Override
@@ -37,15 +39,44 @@ public class StopsActivity extends Activity {
         // Set up class..
         mStopsListView = (ListView) findViewById(R.id.listView);
 
-        // Get the message from the intent
-        Intent intent = getIntent();
-        Route route = (Route) intent.getSerializableExtra("routeData");
+        // Resume?
+        if (savedInstanceState == null) {
+
+            // Get the message from the intent
+            Intent intent = getIntent();
+            mRoute = (Route) intent.getSerializableExtra("routeData");
+
+        } else {
+            mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
 
         // Update label.
-        setTitle(String.format(getTitle().toString(), route.routeNumber, route.routeHeading));
+        setTitle(String.format(getTitle().toString(), mRoute.getTitle(), mRoute.getSubtitle()));
 
         // Execute task.
-        new GTFSStopTask(this).execute(route);
+        new GTFSStopTask(this).execute(mRoute);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putSerializable(ROUTE_DATA, mRoute);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
     }
 
     private class GTFSStopTask extends AsyncTask<Route, Void, List<Stop>> {
@@ -63,7 +94,7 @@ public class StopsActivity extends Activity {
 
             List<Stop> stops = new ArrayList<Stop>();
 
-            String data = (new GTFSDataExchange("miway").getStopsData(route.routeNumber, route.routeHeading));
+            String data = (new GTFSDataExchange("miway").getStopsData(route));
 
             try {
                 stops = GTFSParser.getStops(data);
@@ -71,6 +102,10 @@ public class StopsActivity extends Activity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            for (Stop stop : stops)
+                stop.setRoute(route);
+
             return stops;
         }
 
@@ -78,7 +113,7 @@ public class StopsActivity extends Activity {
         protected void onPostExecute(List<Stop> stops) {
             super.onPostExecute(stops);
 
-            ListItemAdapter adapter = new ListItemAdapter(stops, context);
+            ListItemAdapter adapter = new ListItemAdapter(stops, true, context);
             mStopsListView.setAdapter(adapter);
             mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

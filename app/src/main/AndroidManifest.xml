@@ -25,12 +25,10 @@
         </activity>
         <activity
             android:name="ca.synx.miway.app.StopsActivity"
-            android:label="@string/stops"
-            android:parentActivityName="ca.synx.miway.app.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="ca.synx.miway.app.MainActivity" />
-        </activity>
+            android:label="@string/stops"></activity>
+        <activity
+            android:name="ca.synx.miway.app.StopTimesActivity"
+            android:label="@string/stop_times"></activity>
     </application>
 
 </manifest>

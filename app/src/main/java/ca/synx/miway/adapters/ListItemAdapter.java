@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.List;
@@ -20,11 +21,14 @@ import ca.synx.miway.interfaces.IListItem;
 
 public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
+    private boolean displayNextItemIcon = true;
     private List<T> list;
     private Context context;
 
-    public ListItemAdapter(List<T> list, Context ctx) {
+    public ListItemAdapter(List<T> list, boolean displayNextItemIcon, Context ctx) {
         super(ctx, R.layout.listview_item_basic, list);
+
+        this.displayNextItemIcon = displayNextItemIcon;
         this.list = list;
         this.context = ctx;
     }
@@ -47,13 +51,17 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
         T t = null;
         Holder holder = new Holder();
 
-
         // First let's verify the convertView is not null
         if (view == null) {
 
             // Inflate the new layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.listview_item_basic, null);
+
+            if (!displayNextItemIcon) {
+                ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
+                imageView.setVisibility(View.GONE);
+            }
 
             // Now we can fill the layout with the right values
             TextView titleView = (TextView) v.findViewById(R.id.title);
@@ -63,13 +71,14 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
             holder.subtitle = subtitleView;
 
             v.setTag(R.id.tag_id_1, holder);
-            v.setTag(R.id.tag_id_2, (T) list.get(position));
-
         } else {
             holder = (Holder) v.getTag(R.id.tag_id_1);
         }
 
         t = list.get(position);
+
+        v.setTag(R.id.tag_id_2, (T) t);
+
         holder.title.setText(t.getTitle());
         holder.subtitle.setText(t.getSubtitle());
 

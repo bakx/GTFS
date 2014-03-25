@@ -10,18 +10,20 @@ import java.io.Serializable;
 
 import ca.synx.miway.interfaces.IListItem;
 
-/**
- * Created by Gideon on 3/20/14.
- */
 public class Stop implements IListItem, Serializable {
     public String stopId;
     public String stopName;
     public int stopSequence;
+    public Route route;
 
     public Stop(String stopId, String stopName, int stopSequence) {
         this.stopId = stopId;
         this.stopName = stopName;
         this.stopSequence = stopSequence;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
     public String getTitle() {

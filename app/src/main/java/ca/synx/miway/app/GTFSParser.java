@@ -15,6 +15,7 @@ import java.util.List;
 
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
+import ca.synx.miway.models.StopTime;
 
 public class GTFSParser {
 
@@ -41,7 +42,6 @@ public class GTFSParser {
         return routes;
     }
 
-
     public static List<Stop> getStops(String data) throws JSONException {
         List<Stop> stops = new ArrayList<Stop>();
 
@@ -63,5 +63,27 @@ public class GTFSParser {
             }
         }
         return stops;
+    }
+
+    public static List<StopTime> getStopTimes(String data) throws JSONException {
+        List<StopTime> stopTimes = new ArrayList<StopTime>();
+
+        JSONArray jsonArray = new JSONArray(data);
+
+        for (int i = 0; i < jsonArray.length(); ++i) {
+            JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+            try {
+                stopTimes.add(
+                        new StopTime(
+                                jsonObject.getString("arrivalTime"),
+                                jsonObject.getString("departureTime")
+                        )
+                );
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return stopTimes;
     }
 }
