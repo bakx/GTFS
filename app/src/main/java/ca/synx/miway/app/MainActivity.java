@@ -11,8 +11,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +18,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TabHost;
-import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -29,9 +26,8 @@ import java.util.List;
 
 import ca.synx.miway.adapters.ListItemAdapter;
 import ca.synx.miway.models.Route;
-import ca.synx.miway.models.Stop;
 
-public class MainActivity extends FragmentActivity  {
+public class MainActivity extends Activity {
 
     TabHost mTabHost;
     ListView mFavoritesListView;
@@ -88,7 +84,6 @@ public class MainActivity extends FragmentActivity  {
 
         // Load online.
         new GTFSRouteTask(this).execute();
-        new GTFSStopTask(this).execute();
     }
 
     private class GTFSRouteTask extends AsyncTask<String, Void, List<Route>> {
@@ -111,7 +106,6 @@ public class MainActivity extends FragmentActivity  {
                 e.printStackTrace();
             }
             return routes;
-
         }
 
         @Override
@@ -123,61 +117,19 @@ public class MainActivity extends FragmentActivity  {
             mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                    // Get tag from clicked view.
+                    Route route = (Route) view.getTag(R.id.tag_id_2);
 
-                    StopsFragment fragment = new StopsFragment();
-                    Bundle args = new Bundle();
-                    //args.putInt(StopsFragment.ARG_POSITION, position);
-                   // StopsFragment.setArguments(args);
+                    // Create new intent.
+                    Intent intent = new Intent(context, StopsActivity.class);
 
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    // Pass selected data.
+                    intent.putExtra("routeData", route);
 
-                    // Replace whatever is in the fragment_container view with this fragment,
-                    // and add the transaction to the back stack so the user can navigate back
-                    transaction.replace(R.id.fragment_container, fragment);
-                    transaction.addToBackStack(null);
-
-                    // Commit the transaction
-                    transaction.commit();
-
-
-                    // When clicked, show a toast with the TextView text
-//                    Intent intent = new Intent(context, StopsActivity.class);
-
-//                    Toast.makeText(context, "Clicked", Toast.LENGTH_SHORT).show();
+                    // Start the intent.
+                    startActivity(intent);
                 }
             });
         }
-    }
-
-    private class GTFSStopTask extends AsyncTask<String, Void, List<Stop>> {
-
-        private Context context;
-
-        public GTFSStopTask(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected List<Stop> doInBackground(String... params) {
-            List<Stop> stops = new ArrayList<Stop>();
-            String data = (new GTFSDataExchange("miway").getStopsData("201", "Eastbound"));
-
-            try {
-                stops = GTFSParser.getStops(data);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return stops;
-        }
-
-        @Override
-        protected void onPostExecute(List<Stop> stops) {
-            super.onPostExecute(stops);
-
-            ListItemAdapter adapter = new ListItemAdapter(stops, context);
-            mFavoritesListView.setAdapter(adapter);
-        }
-
     }
 }

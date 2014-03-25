@@ -6,12 +6,14 @@
 
 package ca.synx.miway.models;
 
+import java.io.Serializable;
+
 import ca.synx.miway.interfaces.IListItem;
 
 /**
  * Created by Gideon on 3/20/14.
  */
-public class Stop implements IListItem {
+public class Stop implements IListItem, Serializable {
     public String stopId;
     public String stopName;
     public int stopSequence;

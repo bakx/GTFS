@@ -6,9 +6,11 @@
 
 package ca.synx.miway.models;
 
+import java.io.Serializable;
+
 import ca.synx.miway.interfaces.IListItem;
 
-public class Route implements IListItem {
+public class Route implements IListItem, Serializable {
 
     public String routeNumber;
     public String routeName;

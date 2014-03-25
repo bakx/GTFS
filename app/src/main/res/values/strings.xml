@@ -6,17 +6,22 @@
 
 <resources>
 
-    <string name="app_name">MiWay</string>
+    <string name="app_name">Mississauga Transit</string>
 
     <!-- Tab Names -->
     <string name="tab_favorites">Favorites</string>
     <string name="tab_routes">Routes</string>
-    <string name="tab_stops">Stops</string>
 
+    <!-- Titles -->
+    <string name="stops">Stops (%1$s - %2$s)</string>
 
     <!-- sort out -->
 
     <string name="connection_error">Unable to load content. Check your network connection.</string>
     <string name="xml_error">Error parsing XML.</string>
+
+    <item type="id" name="tag_id_1"></item>
+    <item type="id" name="tag_id_2"></item>
+    <item type="id" name="tag_id_3"></item>
 
 </resources>

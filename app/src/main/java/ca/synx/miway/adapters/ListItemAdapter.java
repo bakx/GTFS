@@ -41,13 +41,15 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
         return list.get(position).hashCode();
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View view, ViewGroup parent) {
 
-        View v = convertView;
+        View v = view;
+        T t = null;
         Holder holder = new Holder();
 
+
         // First let's verify the convertView is not null
-        if (convertView == null) {
+        if (view == null) {
 
             // Inflate the new layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -60,11 +62,14 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
             holder.title = titleView;
             holder.subtitle = subtitleView;
 
-            v.setTag(holder);
-        } else
-            holder = (Holder) v.getTag();
+            v.setTag(R.id.tag_id_1, holder);
+            v.setTag(R.id.tag_id_2, (T) list.get(position));
 
-        T t = list.get(position);
+        } else {
+            holder = (Holder) v.getTag(R.id.tag_id_1);
+        }
+
+        t = list.get(position);
         holder.title.setText(t.getTitle());
         holder.subtitle.setText(t.getSubtitle());
 

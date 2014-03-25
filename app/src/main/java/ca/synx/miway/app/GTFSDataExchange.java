@@ -27,7 +27,6 @@ public class GTFSDataExchange {
         this.transitCompany = transitCompany;
     }
 
-
     private String getData(String dataURL) {
 
         HttpClient client;

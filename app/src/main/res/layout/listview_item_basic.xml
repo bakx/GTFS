@@ -15,7 +15,7 @@
         android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="22dp"
+        android:textSize="20dp"
         android:padding="3dp"
         android:textStyle="bold"
         android:text="Sample Title" />
@@ -24,12 +24,13 @@
         android:id="@+id/subtitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="18dp"
+        android:textSize="17dp"
         android:padding="3dp"
         android:text="Sample Subtitle"
         android:layout_below="@+id/title" />
 
     <ImageView
+        android:id="@+id/nextitem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_action_next_item"

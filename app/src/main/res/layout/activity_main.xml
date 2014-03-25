@@ -9,65 +9,65 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-    <TabHost
-        android:id="@+id/tabHost"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true">
 
-        <LinearLayout
+        <TabHost
+            android:id="@+id/tabHost"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:orientation="vertical">
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true">
 
-            <TabWidget
-                android:id="@android:id/tabs"
+            <LinearLayout
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"></TabWidget>
+                android:layout_height="fill_parent"
+                android:orientation="vertical">
 
-            <FrameLayout
-                android:id="@android:id/tabcontent"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                <TabWidget
+                    android:id="@android:id/tabs"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"></TabWidget>
 
-                <LinearLayout
-                    android:id="@+id/tab1"
+                <FrameLayout
+                    android:id="@android:id/tabcontent"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent">
 
-                    <ListView
-                        android:id="@+id/favoritesListView"
+                    <LinearLayout
+                        android:id="@+id/tab1"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1" />
+                        android:layout_height="fill_parent">
 
-                </LinearLayout>
+                        <ListView
+                            android:id="@+id/favoritesListView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1" />
 
-                <LinearLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
+                    </LinearLayout>
 
-                    <ListView
-                        android:id="@+id/routesListView"
+                    <LinearLayout
+                        android:id="@+id/tab2"
                         android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_weight="1" />
+                        android:layout_height="fill_parent">
 
-                </LinearLayout>
+                        <ListView
+                            android:id="@+id/routesListView"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_weight="1" />
 
-            </FrameLayout>
-        </LinearLayout>
-    </TabHost>
+                    </LinearLayout>
+
+                </FrameLayout>
+            </LinearLayout>
+        </TabHost>
 
     </FrameLayout>
 

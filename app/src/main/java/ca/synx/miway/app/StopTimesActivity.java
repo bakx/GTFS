@@ -7,26 +7,16 @@
 package ca.synx.miway.app;
 
 
-import android.view.LayoutInflater;
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.view.View;
-import android.view.ViewGroup;
 
-/**
- * Created by gbakx on 3/24/2014.
- * http://developer.android.com/training/basics/fragments/communicating.html
- */
-public class StopsFragment extends Fragment {
+public class StopTimesActivity extends Activity {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
-
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_listview, container, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_listview);
     }
+
 }
 
