@@ -6,14 +6,18 @@
 
 package ca.synx.miway.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 
@@ -27,7 +31,7 @@ import ca.synx.miway.adapters.SingleItemAdapter;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
 
-public class StopTimesActivity extends Activity {
+public class StopTimesActivity extends ActionBarActivity {
 
     static final String STOP_DATA = "stopData";
     Stop mStop;
@@ -41,7 +45,6 @@ public class StopTimesActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stoptimes);
-
 
         // Resume?
         if (savedInstanceState == null) {
@@ -88,6 +91,31 @@ public class StopTimesActivity extends Activity {
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.stoptimes, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_add_favorite:
+                Toast.makeText(this, R.string.added_favorites, Toast.LENGTH_LONG).show();
+
+                return true;
+            case R.id.action_remove_favorite:
+                Toast.makeText(this, R.string.removed_favorites, Toast.LENGTH_LONG).show();
+                ;
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class GTFSStopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {

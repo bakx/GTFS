@@ -9,14 +9,13 @@
 
     <item
         android:id="@+id/action_add_favorite"
-        android:icon="@drawable/ic_action_important"
+        android:icon="@drawable/ic_action_important_light"
         android:title="@string/add_favorites"
         app:showAsAction="ifRoom" />
 
-
     <item
         android:id="@+id/action_remove_favorite"
-        android:icon="@drawable/ic_action_not_important"
+        android:icon="@drawable/ic_action_not_important_light"
         android:title="@string/remove_favorites"
         app:showAsAction="ifRoom" />
 
