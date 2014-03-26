@@ -112,7 +112,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(List<Route> routes) {
             super.onPostExecute(routes);
 
-            ListItemAdapter adapter = new ListItemAdapter(routes, true, context);
+            ListItemAdapter<Route> adapter = new ListItemAdapter<Route>(routes, true, context);
             mRoutesListView.setAdapter(adapter);
             mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

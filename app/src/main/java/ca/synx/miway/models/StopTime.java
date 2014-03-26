@@ -25,10 +25,12 @@ public class StopTime implements IListItem, Serializable {
     }
 
     public String getTitle() {
-        return departureTime;
+        return this.departureTime;
     }
 
+    ;
+
     public String getSubtitle() {
-        return this.arrivalTime;
+        return "";
     }
 }

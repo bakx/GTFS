@@ -15,26 +15,28 @@
         android:id="@+id/title"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="20dp"
         android:padding="3dp"
-        android:textStyle="bold"
-        android:text="Sample Title" />
+        android:text="Sample Title"
+        android:textSize="20dp"
+        android:textStyle="bold" />
 
     <TextView
         android:id="@+id/subtitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textSize="17dp"
+        android:layout_below="@+id/title"
         android:padding="3dp"
         android:text="Sample Subtitle"
-        android:layout_below="@+id/title" />
+        android:textSize="17dp" />
 
     <ImageView
         android:id="@+id/nextitem"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_action_next_item"
         android:layout_alignParentRight="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        android:scaleX="0.5"
+        android:scaleY="0.5"
+        android:src="@drawable/ic_action_next_item" />
 
 </RelativeLayout>

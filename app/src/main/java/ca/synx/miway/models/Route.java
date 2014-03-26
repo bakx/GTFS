@@ -29,4 +29,8 @@ public class Route implements IListItem, Serializable {
     public String getSubtitle() {
         return this.routeHeading;
     }
+
+    public String getFull() {
+        return this.routeNumber + this.routeHeading.substring(0, 1) + " - " + this.routeName;
+    }
 }

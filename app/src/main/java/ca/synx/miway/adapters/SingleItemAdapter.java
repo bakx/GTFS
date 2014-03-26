@@ -19,13 +19,13 @@ import java.util.List;
 import ca.synx.miway.app.R;
 import ca.synx.miway.interfaces.IListItem;
 
-public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
+public class SingleItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
     private boolean displayNextItemIcon = true;
     private List<T> list;
     private Context context;
 
-    public ListItemAdapter(List<T> list, boolean displayNextItemIcon, Context ctx) {
+    public SingleItemAdapter(List<T> list, boolean displayNextItemIcon, Context ctx) {
         super(ctx, R.layout.listview_item_basic, list);
 
         this.displayNextItemIcon = displayNextItemIcon;
@@ -56,7 +56,7 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
             // Inflate the new layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.listview_item_basic, null);
+            v = inflater.inflate(R.layout.listview_item_single, null);
 
             if (!displayNextItemIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
@@ -65,10 +65,8 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
             // Now we can fill the layout with the right values
             TextView titleView = (TextView) v.findViewById(R.id.title);
-            TextView subtitleView = (TextView) v.findViewById(R.id.subtitle);
 
             holder.title = titleView;
-            holder.subtitle = subtitleView;
 
             v.setTag(R.id.tag_id_1, holder);
         } else {
@@ -80,14 +78,12 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
         v.setTag(R.id.tag_id_2, (T) t);
 
         holder.title.setText(t.getTitle());
-        holder.subtitle.setText(t.getSubtitle());
 
         return v;
     }
 
     private static class Holder {
         public TextView title;
-        public TextView subtitle;
     }
 }
 

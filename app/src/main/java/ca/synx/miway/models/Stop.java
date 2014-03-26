@@ -33,4 +33,8 @@ public class Stop implements IListItem, Serializable {
     public String getSubtitle() {
         return this.stopId;
     }
+
+    public String getFull() {
+        return this.stopId + " - " + this.stopName;
+    }
 }

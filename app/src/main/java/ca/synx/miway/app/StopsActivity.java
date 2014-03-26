@@ -113,7 +113,7 @@ public class StopsActivity extends Activity {
         protected void onPostExecute(List<Stop> stops) {
             super.onPostExecute(stops);
 
-            ListItemAdapter adapter = new ListItemAdapter(stops, true, context);
+            ListItemAdapter<Stop> adapter = new ListItemAdapter<Stop>(stops, true, context);
             mStopsListView.setAdapter(adapter);
             mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -8,6 +8,7 @@
 
     <string name="app_name">Mississauga Transit</string>
     <string name="all_stops">All stops</string>
+    <string name="next_stops">Next stops</string>
 
     <!-- Tab Names -->
     <string name="tab_favorites">Favorites</string>
@@ -16,13 +17,14 @@
     <!-- Actions -->
     <string name="add_favorites">Add Favorite</string>
     <string name="remove_favorites">Remove Favorite</string>
+    <string name="added_favorites">Added to Favorites</string>
+    <string name="removed_favorites">Removed from Favorites</string>
 
     <!-- Titles -->
     <string name="stops">Stops (%1$s - %2$s)</string>
-    <string name="stop_times">Stop times (%1$s - %2$s)</string>
+    <string name="stop_times">Stop times</string>
 
     <!-- sort out -->
-
     <string name="connection_error">Unable to load content. Check your network connection.</string>
     <string name="xml_error">Error parsing XML.</string>
 
