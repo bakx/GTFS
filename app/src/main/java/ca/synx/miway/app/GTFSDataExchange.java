@@ -14,6 +14,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
@@ -21,9 +23,9 @@ import ca.synx.miway.models.Stop;
 public class GTFSDataExchange {
 
     private static String GTFS_BASE_URL = "http://miway.dataservices.synx.ca";
-    private static String GET_ROUTES_URL = "/api/MiWay/GetRoutes";
-    private static String GET_STOPS_URL = "/api/MiWay/GetStops/%s/%s";
-    private static String GET_STOP_TIMES_URL = "/api/MiWay/GetStops/%s/%s/%s";
+    private static String GET_ROUTES_URL = "/api/MiWay/GetRoutes/%s";
+    private static String GET_STOPS_URL = "/api/MiWay/GetStops/%s/%s/%s";
+    private static String GET_STOP_TIMES_URL = "/api/MiWay/GetStops/%s/%s/%s/%s";
     private String transitCompany;
 
     public GTFSDataExchange(String transitCompany) {
@@ -56,18 +58,24 @@ public class GTFSDataExchange {
     }
 
     public String getRouteData() {
-        return getData(GTFS_BASE_URL + GET_ROUTES_URL);
+        return getData(
+                String.format(GTFS_BASE_URL + GET_ROUTES_URL, getServiceTimeStamp())
+        );
     }
 
     public String getStopsData(Route route) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOPS_URL, route.routeNumber, route.routeHeading)
+                String.format(GTFS_BASE_URL + GET_STOPS_URL, route.routeNumber, route.routeHeading, getServiceTimeStamp())
         );
     }
 
     public String getStopTimesData(Stop stop) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.route.routeNumber, stop.route.routeHeading, stop.stopId)
+                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.route.routeNumber, stop.route.routeHeading, stop.stopId, getServiceTimeStamp())
         );
+    }
+
+    private String getServiceTimeStamp() {
+        return new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()).toString();
     }
 }
