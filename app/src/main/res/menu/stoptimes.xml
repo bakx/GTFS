@@ -1,0 +1,23 @@
+<!--
+  ~ Copyright (c) 2014, SYNX (Gideon Bakx)
+  ~
+  ~  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_add_favorite"
+        android:icon="@drawable/ic_action_important"
+        android:title="@string/add_favorites"
+        app:showAsAction="ifRoom" />
+
+
+    <item
+        android:id="@+id/action_remove_favorite"
+        android:icon="@drawable/ic_action_not_important"
+        android:title="@string/remove_favorites"
+        app:showAsAction="ifRoom" />
+
+</menu>

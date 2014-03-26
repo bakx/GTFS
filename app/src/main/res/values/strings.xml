@@ -7,10 +7,15 @@
 <resources>
 
     <string name="app_name">Mississauga Transit</string>
+    <string name="all_stops">All stops</string>
 
     <!-- Tab Names -->
     <string name="tab_favorites">Favorites</string>
     <string name="tab_routes">Routes</string>
+
+    <!-- Actions -->
+    <string name="add_favorites">Add Favorite</string>
+    <string name="remove_favorites">Remove Favorite</string>
 
     <!-- Titles -->
     <string name="stops">Stops (%1$s - %2$s)</string>
