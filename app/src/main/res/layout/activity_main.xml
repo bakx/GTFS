@@ -46,7 +46,7 @@
                             android:id="@+id/favoritesListView"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
+                            android:layout_gravity="top"
                             android:layout_weight="1" />
 
                     </LinearLayout>
@@ -60,7 +60,7 @@
                             android:id="@+id/routesListView"
                             android:layout_width="fill_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
+                            android:layout_gravity="top"
                             android:layout_weight="1" />
 
                     </LinearLayout>

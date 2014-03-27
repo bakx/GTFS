@@ -26,8 +26,11 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
+import ca.synx.miway.Util.Favorites;
 import ca.synx.miway.adapters.SingleItemAdapter;
+import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
 
@@ -106,12 +109,21 @@ public class StopTimesActivity extends ActionBarActivity {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
             case R.id.action_add_favorite:
-                Toast.makeText(this, R.string.added_favorites, Toast.LENGTH_LONG).show();
 
+                Favorites<Favorite> f = new Favorites<Favorite>(getApplicationContext());
+                f.saveFavorite(
+                        new Favorite(UUID.randomUUID().toString(),
+                                mStop.stopId,
+                                mStop.stopName,
+                                mStop.stopSequence,
+                                mStop.route)
+                );
+
+                Toast.makeText(this, R.string.added_favorites, Toast.LENGTH_LONG).show();
                 return true;
+
             case R.id.action_remove_favorite:
                 Toast.makeText(this, R.string.removed_favorites, Toast.LENGTH_LONG).show();
-                ;
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

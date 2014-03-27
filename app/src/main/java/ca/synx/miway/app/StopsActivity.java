@@ -20,7 +20,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.adapters.ListItemAdapter;
+import ca.synx.miway.adapters.StopsAdapter;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 
@@ -113,7 +113,7 @@ public class StopsActivity extends Activity {
         protected void onPostExecute(List<Stop> stops) {
             super.onPostExecute(stops);
 
-            ListItemAdapter<Stop> adapter = new ListItemAdapter<Stop>(stops, true, context);
+            StopsAdapter<Stop> adapter = new StopsAdapter<Stop>(stops, R.layout.listview_item_basic, true, context);
             mStopsListView.setAdapter(adapter);
             mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

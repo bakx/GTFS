@@ -24,14 +24,20 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.adapters.ListItemAdapter;
+import ca.synx.miway.Util.Favorites;
+import ca.synx.miway.adapters.FavoriteItemAdapter;
+import ca.synx.miway.adapters.RoutesAdapter;
+import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
+import ca.synx.miway.models.Stop;
 
 public class MainActivity extends Activity {
 
     TabHost mTabHost;
     ListView mFavoritesListView;
     ListView mRoutesListView;
+
+    List<Favorite> favorites;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +46,6 @@ public class MainActivity extends Activity {
 
         // Init tabs
         initializeTabs();
-
-        initTabs();
     }
 
     @Override
@@ -76,14 +80,62 @@ public class MainActivity extends Activity {
                         .setIndicator(getResources().getString(R.string.tab_routes)
                         )
         );
-    }
 
-    protected void initTabs() {
         mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
         mRoutesListView = (ListView) findViewById(R.id.routesListView);
 
-        // Load online.
+        // Prepare favorites.
+        new FavoritesTask(this).execute();
+
+        // Fetch Routes from online web service.
         new GTFSRouteTask(this).execute();
+    }
+
+    private class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
+
+        private Context context;
+
+        public FavoritesTask(Context context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Favorite> doInBackground(String... params) {
+
+            List<Favorite> favorites = new ArrayList<Favorite>();
+
+            try {
+                favorites = new Favorites<Favorite>(context).getFavorites();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return favorites;
+        }
+
+        @Override
+        protected void onPostExecute(List<Favorite> favorites) {
+            super.onPostExecute(favorites);
+
+            FavoriteItemAdapter<Favorite> adapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_basic, true, context);
+            mFavoritesListView.setAdapter(adapter);
+            mFavoritesListView.setOnItemClickListener(new OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    // Get tag from clicked view.
+                    Stop stop = (Stop) view.getTag(R.id.tag_id_2);
+
+                    // Create new intent.
+                    Intent intent = new Intent(context, StopTimesActivity.class);
+
+                    // Pass selected data.
+                    intent.putExtra("stopData", stop);
+
+                    // Start the intent.
+                    startActivity(intent);
+                }
+            });
+        }
     }
 
     private class GTFSRouteTask extends AsyncTask<String, Void, List<Route>> {
@@ -112,7 +164,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(List<Route> routes) {
             super.onPostExecute(routes);
 
-            ListItemAdapter<Route> adapter = new ListItemAdapter<Route>(routes, true, context);
+            RoutesAdapter<Route> adapter = new RoutesAdapter<Route>(routes, R.layout.listview_item_basic, true, context);
             mRoutesListView.setAdapter(adapter);
             mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -19,16 +19,18 @@ import java.util.List;
 import ca.synx.miway.app.R;
 import ca.synx.miway.interfaces.IListItem;
 
-public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
+public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
-    private boolean displayNextItemIcon = true;
+    private int listViewResourceID;
+    private boolean showNextIcon = true;
     private List<T> list;
     private Context context;
 
-    public ListItemAdapter(List<T> list, boolean displayNextItemIcon, Context ctx) {
-        super(ctx, R.layout.listview_item_basic, list);
+    public BaseAdapter(List<T> list, int listViewResourceID, boolean showNextIcon, Context ctx) {
+        super(ctx, listViewResourceID, list);
 
-        this.displayNextItemIcon = displayNextItemIcon;
+        this.listViewResourceID = listViewResourceID;
+        this.showNextIcon = showNextIcon;
         this.list = list;
         this.context = ctx;
     }
@@ -56,9 +58,9 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
             // Inflate the new layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.listview_item_basic, null);
+            v = inflater.inflate(listViewResourceID, null);
 
-            if (!displayNextItemIcon) {
+            if (!showNextIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
                 imageView.setVisibility(View.GONE);
             }
@@ -90,4 +92,3 @@ public class ListItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
         public TextView subtitle;
     }
 }
-

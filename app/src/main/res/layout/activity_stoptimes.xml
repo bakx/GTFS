@@ -30,6 +30,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/stopName"
+        android:layout_marginTop="10dp"
         android:text="@string/next_stops"
         android:textSize="19dp"
         android:textStyle="bold" />
@@ -38,13 +39,15 @@
         android:id="@+id/nextStopTimesListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/nextStopTimesTextView" />
+        android:layout_below="@+id/nextStopTimesTextView"
+        android:divider="@null" />
 
     <TextView
         android:id="@+id/stopTimesTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/nextStopTimesListView"
+        android:layout_marginTop="10dp"
         android:text="@string/all_stops"
         android:textSize="19dp"
         android:textStyle="bold" />
@@ -53,6 +56,7 @@
         android:id="@+id/stopTimesListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/stopTimesTextView" />
+        android:layout_below="@id/stopTimesTextView"
+        android:divider="@null" />
 
 </RelativeLayout>
