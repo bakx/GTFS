@@ -10,7 +10,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,32 +18,13 @@ import java.util.List;
 import ca.synx.miway.app.R;
 import ca.synx.miway.interfaces.IListItem;
 
-public class SingleItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
+public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
 
-    private boolean displayNextItemIcon = true;
-    private List<T> list;
-    private Context context;
-
-    public SingleItemAdapter(List<T> list, boolean displayNextItemIcon, Context ctx) {
-        super(ctx, R.layout.listview_item_basic, list);
-
-        this.displayNextItemIcon = displayNextItemIcon;
-        this.list = list;
-        this.context = ctx;
+    public SingleItemAdapter(List<T> list, int listViewResourceID, boolean showNextIcon, Context ctx) {
+        super(list, listViewResourceID, showNextIcon, ctx);
     }
 
-    public int getCount() {
-        return list.size();
-    }
-
-    public T getItem(int position) {
-        return list.get(position);
-    }
-
-    public long getItemId(int position) {
-        return list.get(position).hashCode();
-    }
-
+    @Override
     public View getView(int position, View view, ViewGroup parent) {
 
         View v = view;
@@ -58,7 +38,7 @@ public class SingleItemAdapter<T extends IListItem> extends ArrayAdapter<T> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.listview_item_single, null);
 
-            if (!displayNextItemIcon) {
+            if (!showNextIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
                 imageView.setVisibility(View.GONE);
             }

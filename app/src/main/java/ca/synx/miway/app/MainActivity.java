@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,8 +28,8 @@ import java.util.List;
 import ca.synx.miway.Util.FavoritesHandler;
 import ca.synx.miway.Util.GTFSDataExchange;
 import ca.synx.miway.Util.GTFSParser;
+import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
-import ca.synx.miway.adapters.RoutesAdapter;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
 
@@ -118,7 +119,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(List<Favorite> favorites) {
             super.onPostExecute(favorites);
 
-            FavoriteItemAdapter<Favorite> adapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_basic, true, context);
+            FavoriteItemAdapter<Favorite> adapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, context);
             mFavoritesListView.setAdapter(adapter);
             mFavoritesListView.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -141,10 +142,10 @@ public class MainActivity extends Activity {
 
     private class GTFSRouteTask extends AsyncTask<String, Void, List<Route>> {
 
-        private Context context;
+        private Context mContext;
 
         public GTFSRouteTask(Context context) {
-            this.context = context;
+            this.mContext = context;
         }
 
         @Override
@@ -156,6 +157,7 @@ public class MainActivity extends Activity {
                 routes = GTFSParser.getRoutes(data);
 
             } catch (JSONException e) {
+                Log.v("GTFSRouteTask->doInBackground", e.getMessage());
                 e.printStackTrace();
             }
             return routes;
@@ -165,7 +167,7 @@ public class MainActivity extends Activity {
         protected void onPostExecute(List<Route> routes) {
             super.onPostExecute(routes);
 
-            RoutesAdapter<Route> adapter = new RoutesAdapter<Route>(routes, R.layout.listview_item_basic, true, context);
+            BaseAdapter<Route> adapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
             mRoutesListView.setAdapter(adapter);
             mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -174,7 +176,7 @@ public class MainActivity extends Activity {
                     Route route = (Route) view.getTag(R.id.tag_id_2);
 
                     // Create new intent.
-                    Intent intent = new Intent(context, StopsActivity.class);
+                    Intent intent = new Intent(mContext, StopsActivity.class);
 
                     // Pass selected data.
                     intent.putExtra("routeData", route);

@@ -22,7 +22,7 @@ import java.util.List;
 
 import ca.synx.miway.Util.GTFSDataExchange;
 import ca.synx.miway.Util.GTFSParser;
-import ca.synx.miway.adapters.StopsAdapter;
+import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 
@@ -83,10 +83,10 @@ public class StopsActivity extends Activity {
 
     private class GTFSStopTask extends AsyncTask<Route, Void, List<Stop>> {
 
-        private Context context;
+        private Context mContext;
 
         public GTFSStopTask(Context context) {
-            this.context = context;
+            this.mContext = context;
         }
 
         @Override
@@ -115,7 +115,7 @@ public class StopsActivity extends Activity {
         protected void onPostExecute(List<Stop> stops) {
             super.onPostExecute(stops);
 
-            StopsAdapter<Stop> adapter = new StopsAdapter<Stop>(stops, R.layout.listview_item_basic, true, context);
+            BaseAdapter<Stop> adapter = new BaseAdapter<Stop>(stops, R.layout.listview_item_basic, true, mContext);
             mStopsListView.setAdapter(adapter);
             mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -124,7 +124,7 @@ public class StopsActivity extends Activity {
                     Stop stop = (Stop) view.getTag(R.id.tag_id_2);
 
                     // Create new intent.
-                    Intent intent = new Intent(context, StopTimesActivity.class);
+                    Intent intent = new Intent(mContext, StopTimesActivity.class);
 
                     // Pass selected data.
                     intent.putExtra("stopData", stop);

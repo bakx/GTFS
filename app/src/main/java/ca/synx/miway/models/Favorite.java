@@ -34,11 +34,11 @@ public class Favorite implements IDBItem, IListItem, Serializable {
     }
 
     public String getTitle() {
-        return this.mStop.getRoute().getRouteNumber() + " " + this.mStop.getRoute().getRouteName();
+        return this.mStop.getRoute().getFull();
     }
 
     public String getSubtitle() {
-        return this.mStop.getRoute().getRouteHeading();
+        return this.mStop.getStopName();
     }
 
     public String getFull() {

@@ -6,6 +6,8 @@
 
 package ca.synx.miway.Util;
 
+import android.util.Log;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -23,9 +25,9 @@ import ca.synx.miway.models.Stop;
 public class GTFSDataExchange {
 
     private static String GTFS_BASE_URL = "http://miway.dataservices.synx.ca";
-    private static String GET_ROUTES_URL = "/api/MiWay/GetRoutes/%s";
-    private static String GET_STOPS_URL = "/api/MiWay/GetStops/%s/%s/%s";
-    private static String GET_STOP_TIMES_URL = "/api/MiWay/GetStops/%s/%s/%s/%s";
+    private static String GET_ROUTES_URL = "/api/GTFS/GetRoutes/%s";
+    private static String GET_STOPS_URL = "/api/GTFS/GetStops/%s/%s/%s";
+    private static String GET_STOP_TIMES_URL = "/api/GTFS/GetStops/%s/%s/%s/%s";
     private String transitCompany;
 
     public GTFSDataExchange(String transitCompany) {
@@ -51,7 +53,8 @@ public class GTFSDataExchange {
             is.close();
             result = sb.toString();
         } catch (Exception e) {
-            return null;
+            Log.v("GTFSDataExchange.getData threw error", e.getMessage());
+            return "";
         }
 
         return result;

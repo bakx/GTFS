@@ -155,15 +155,15 @@ public class StopTimesActivity extends ActionBarActivity {
     }
 
     private void handleFavorite() {
-        invalidateOptionsMenu();
+        supportInvalidateOptionsMenu();
     }
 
     private class GTFSStopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
-        private Context context;
+        private Context mContext;
 
         public GTFSStopTimesTask(Context context) {
-            this.context = context;
+            this.mContext = context;
         }
 
         @Override
@@ -174,6 +174,11 @@ public class StopTimesActivity extends ActionBarActivity {
             List<StopTime> stopTimes = new ArrayList<StopTime>();
 
             String data = (new GTFSDataExchange("miway").getStopTimesData(stop));
+
+            if (data == "") {
+                Toast.makeText(mContext, R.string.connection_error, Toast.LENGTH_SHORT).show();
+                return stopTimes;
+            }
 
             try {
                 stopTimes = GTFSParser.getStopTimes(data);
@@ -207,13 +212,12 @@ public class StopTimesActivity extends ActionBarActivity {
 
             List<StopTime> nearestTime = getNearestStopTimes(stopTimes, 5);
 
-            SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nearestTime, false, context);
+            SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nearestTime, R.layout.listview_item_single, false, mContext);
             mNextStopTimesListView.setAdapter(adapter);
 
-            adapter = new SingleItemAdapter<StopTime>(stopTimes, false, context);
+            adapter = new SingleItemAdapter<StopTime>(stopTimes, R.layout.listview_item_single, false, mContext);
             mStopTimesListView.setAdapter(adapter);
         }
-
 
         protected List<StopTime> getNearestStopTimes(List<StopTime> source, int targetCount) {
             List<StopTime> nearestStopTimes = new ArrayList<StopTime>();
@@ -231,7 +235,7 @@ public class StopTimesActivity extends ActionBarActivity {
                         )
                 );
             } catch (Exception e) {
-                Log.e("getNearestStopTimes currentDate error", e.getMessage());
+                Log.v("getNearestStopTimes currentDate error", e.getMessage());
                 return nearestStopTimes;
             }
 
@@ -259,7 +263,7 @@ public class StopTimesActivity extends ActionBarActivity {
                     // time difference is 0, are valid. Keep adding them until we reach 'targetCount'
                     nearestStopTimes.add(stopTime);
                 } catch (Exception e) {
-                    Log.e("getNearestStopTimes departureTime parsing error", e.getMessage());
+                    Log.v("getNearestStopTimes departureTime parsing error", e.getMessage());
                 }
 
                 if (nearestStopTimes.size() >= targetCount)

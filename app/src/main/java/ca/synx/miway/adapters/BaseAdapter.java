@@ -21,10 +21,10 @@ import ca.synx.miway.interfaces.IListItem;
 
 public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
-    private int listViewResourceID;
-    private boolean showNextIcon = true;
-    private List<T> list;
-    private Context context;
+    public int listViewResourceID;
+    public boolean showNextIcon = true;
+    public List<T> list;
+    public Context context;
 
     public BaseAdapter(List<T> list, int listViewResourceID, boolean showNextIcon, Context ctx) {
         super(ctx, listViewResourceID, list);
@@ -53,10 +53,7 @@ public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
         T t = null;
         Holder holder = new Holder();
 
-        // First let's verify the convertView is not null
         if (view == null) {
-
-            // Inflate the new layout
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(listViewResourceID, null);
 
@@ -65,22 +62,23 @@ public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
                 imageView.setVisibility(View.GONE);
             }
 
-            // Now we can fill the layout with the right values
-            TextView titleView = (TextView) v.findViewById(R.id.title);
-            TextView subtitleView = (TextView) v.findViewById(R.id.subtitle);
+            holder.title = (TextView) v.findViewById(R.id.title);
+            holder.subtitle = (TextView) v.findViewById(R.id.subtitle);
 
-            holder.title = titleView;
-            holder.subtitle = subtitleView;
-
+            // Cache holder for performance reasons.
             v.setTag(R.id.tag_id_1, holder);
         } else {
+            // Retrieve holder from Cache.
             holder = (Holder) v.getTag(R.id.tag_id_1);
         }
 
+        // Get position of list item.
         t = list.get(position);
 
+        // Update tag of view with object reference of object T
         v.setTag(R.id.tag_id_2, (T) t);
 
+        // Update titles of the view item.
         holder.title.setText(t.getTitle());
         holder.subtitle.setText(t.getSubtitle());
 

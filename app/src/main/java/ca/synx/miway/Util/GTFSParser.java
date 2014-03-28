@@ -30,9 +30,9 @@ public class GTFSParser {
             try {
                 routes.add(
                         new Route(
-                                jsonObject.getString("routeNumber"),
-                                jsonObject.getString("routeName"),
-                                jsonObject.getString("routeHeading")
+                                jsonObject.getString("RouteNumber"),
+                                jsonObject.getString("RouteName"),
+                                jsonObject.getString("RouteHeading")
                         )
                 );
             } catch (Exception e) {
@@ -53,9 +53,9 @@ public class GTFSParser {
             try {
                 stops.add(
                         new Stop(
-                                jsonObject.getString("stopId"),
-                                jsonObject.getString("stopName"),
-                                jsonObject.getInt("stopSequence")
+                                jsonObject.getString("StopId"),
+                                jsonObject.getString("StopName"),
+                                jsonObject.getInt("StopSequence")
                         )
                 );
             } catch (Exception e) {
@@ -76,8 +76,8 @@ public class GTFSParser {
             try {
                 stopTimes.add(
                         new StopTime(
-                                jsonObject.getString("arrivalTime"),
-                                jsonObject.getString("departureTime")
+                                jsonObject.getString("ArrivalTime"),
+                                jsonObject.getString("DepartureTime")
                         )
                 );
             } catch (Exception e) {
