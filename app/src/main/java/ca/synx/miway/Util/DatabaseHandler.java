@@ -14,7 +14,7 @@ import ca.synx.miway.models.Favorite;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
     public static final String DATABASE_NAME = "GTFS.db";
 
     public DatabaseHandler(Context context) {
@@ -26,8 +26,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // This database is only a cache for online data, so its upgrade policy is
-        // to simply to discard the data and start over
         db.execSQL(new Favorite().DELETE_SQL_ENTRIES());
         onCreate(db);
     }

@@ -6,13 +6,15 @@
 
 package ca.synx.miway.models;
 
+import java.io.Serializable;
+
 import ca.synx.miway.interfaces.IDBItem;
 import ca.synx.miway.interfaces.IListItem;
 import ca.synx.miway.tables.FavoriteTable;
 
-public class Favorite implements IDBItem, IListItem {
+public class Favorite implements IDBItem, IListItem, Serializable {
 
-    private String mId;
+    private int mId;
     private Stop mStop;
 
     public Favorite() {
@@ -22,7 +24,7 @@ public class Favorite implements IDBItem, IListItem {
         this.mStop = stop;
     }
 
-    public Favorite(String id, Stop stop) {
+    public Favorite(int id, Stop stop) {
         this.mId = id;
         this.mStop = stop;
     }
@@ -43,13 +45,17 @@ public class Favorite implements IDBItem, IListItem {
         return this.mStop.getRoute().getRouteNumber() + this.mStop.getRoute().getRouteHeading().substring(0, 1) + " - " + this.mStop.getRoute().getRouteName();
     }
 
-    public String getId() {
+    public int getId() {
         return mId;
+    }
+
+    public void setId(int id) {
+        this.mId = id;
     }
 
     public String CREATE_SQL_ENTRIES() {
         return "CREATE TABLE " + FavoriteTable.TABLE_NAME + " (" +
-                FavoriteTable.COLUMN_FAVORITE_ID + " INTEGER PRIMARY KEY," +
+                FavoriteTable.COLUMN_FAVORITE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 FavoriteTable.COLUMN_STOP_ID + " TEXT," +
                 FavoriteTable.COLUMN_STOP_NAME + " TEXT," +
                 FavoriteTable.COLUMN_STOP_SEQUENCE + " INT," +
@@ -60,7 +66,7 @@ public class Favorite implements IDBItem, IListItem {
     }
 
     public String DELETE_SQL_ENTRIES() {
-        return "DROP TABLE EXIST TABLE " + FavoriteTable.TABLE_NAME + ";";
+        return "DROP TABLE IF EXIST " + FavoriteTable.TABLE_NAME + ";";
     }
 }
 

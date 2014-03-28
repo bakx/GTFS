@@ -24,14 +24,13 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.Util.Favorites;
+import ca.synx.miway.Util.FavoritesHandler;
 import ca.synx.miway.Util.GTFSDataExchange;
 import ca.synx.miway.Util.GTFSParser;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
 import ca.synx.miway.adapters.RoutesAdapter;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
-import ca.synx.miway.models.Stop;
 
 public class MainActivity extends Activity {
 
@@ -107,7 +106,7 @@ public class MainActivity extends Activity {
             List<Favorite> favorites = new ArrayList<Favorite>();
 
             try {
-                favorites = new Favorites(context).getFavorites();
+                favorites = new FavoritesHandler(context).getFavorites();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -125,13 +124,13 @@ public class MainActivity extends Activity {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                     // Get tag from clicked view.
-                    Stop stop = (Stop) view.getTag(R.id.tag_id_2);
+                    Favorite favorite = (Favorite) view.getTag(R.id.tag_id_2);
 
                     // Create new intent.
                     Intent intent = new Intent(context, StopTimesActivity.class);
 
                     // Pass selected data.
-                    intent.putExtra("stopData", stop);
+                    intent.putExtra("stopData", favorite.getStop());
 
                     // Start the intent.
                     startActivity(intent);

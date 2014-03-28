@@ -71,7 +71,7 @@ public class GTFSDataExchange {
 
     public String getStopTimesData(Stop stop) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.getRoute().getRouteNumber(), stop.getRoute().getRouteHeading(), stop.getRoute(), getServiceTimeStamp())
+                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.getRoute().getRouteNumber(), stop.getRoute().getRouteHeading(), stop.getStopId(), getServiceTimeStamp())
         );
     }
 

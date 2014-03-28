@@ -28,8 +28,6 @@ public class StopTime implements IListItem, Serializable {
         return this.departureTime;
     }
 
-    ;
-
     public String getSubtitle() {
         return "";
     }

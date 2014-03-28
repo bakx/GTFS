@@ -27,7 +27,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import ca.synx.miway.Util.Favorites;
+import ca.synx.miway.Util.FavoritesHandler;
 import ca.synx.miway.Util.GTFSDataExchange;
 import ca.synx.miway.Util.GTFSParser;
 import ca.synx.miway.adapters.SingleItemAdapter;
@@ -36,14 +36,17 @@ import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
 
 public class StopTimesActivity extends ActionBarActivity {
-
+    static final String FAVORITE_DATA = "favoriteData";
     static final String STOP_DATA = "stopData";
+
     Stop mStop;
+    Favorite mFavorite;
 
     TextView mRouteName;
     TextView mStopName;
     ListView mNextStopTimesListView;
     ListView mStopTimesListView;
+    Menu mMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,13 +55,11 @@ public class StopTimesActivity extends ActionBarActivity {
 
         // Resume?
         if (savedInstanceState == null) {
-
-            // Get the message from the intent
             Intent intent = getIntent();
             mStop = (Stop) intent.getSerializableExtra(STOP_DATA);
-
         } else {
             mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
+            mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
         }
     }
 
@@ -73,9 +74,12 @@ public class StopTimesActivity extends ActionBarActivity {
         mRouteName = (TextView) findViewById(R.id.routeName);
         mStopName = (TextView) findViewById(R.id.stopName);
 
-        //
         mRouteName.setText(mStop.getRoute().getFull());
         mStopName.setText(mStop.getFull());
+
+        // Check favorite..
+        mFavorite = new Favorite(mStop);
+        new FavoritesHandler(this).isFavorite(mFavorite);
 
         // Execute task.
         new GTFSStopTimesTask(this).execute(mStop);
@@ -89,20 +93,37 @@ public class StopTimesActivity extends ActionBarActivity {
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putSerializable(STOP_DATA, mStop);
+        savedInstanceState.putSerializable(FAVORITE_DATA, mFavorite);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
+        mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu items for use in the action bar
+        mMenu = menu;
+
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.stoptimes, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+
+        if (mFavorite.getId() > 0) {
+            menu.findItem(R.id.action_add_favorite).setVisible(false);
+            menu.findItem(R.id.action_remove_favorite).setVisible(true);
+        } else {
+            menu.findItem(R.id.action_add_favorite).setVisible(true);
+            menu.findItem(R.id.action_remove_favorite).setVisible(false);
+        }
+
+        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
@@ -111,22 +132,30 @@ public class StopTimesActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_add_favorite:
 
-                new Favorites(getApplicationContext())
-                        .saveFavorite(new Favorite(mStop));
+                new FavoritesHandler(getApplicationContext())
+                        .saveFavorite(mFavorite);
+
+                handleFavorite();
 
                 Toast.makeText(this, R.string.added_favorites, Toast.LENGTH_LONG).show();
                 return true;
 
             case R.id.action_remove_favorite:
 
-                new Favorites(getApplicationContext())
-                        .removeFavorite(new Favorite(mStop));
+                new FavoritesHandler(getApplicationContext())
+                        .removeFavorite(mFavorite);
+
+                handleFavorite();
 
                 Toast.makeText(this, R.string.removed_favorites, Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void handleFavorite() {
+        invalidateOptionsMenu();
     }
 
     private class GTFSStopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {

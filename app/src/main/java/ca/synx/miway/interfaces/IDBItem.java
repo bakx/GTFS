@@ -7,7 +7,7 @@
 package ca.synx.miway.interfaces;
 
 public interface IDBItem {
-    public String getId();
+    public int getId();
 
     public String CREATE_SQL_ENTRIES();
 
