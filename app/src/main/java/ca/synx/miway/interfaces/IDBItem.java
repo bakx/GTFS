@@ -6,6 +6,10 @@
 
 package ca.synx.miway.interfaces;
 
-public interface IFavorite {
-    public String getID();
+public interface IDBItem {
+    public String getId();
+
+    public String CREATE_SQL_ENTRIES();
+
+    public String DELETE_SQL_ENTRIES();
 }

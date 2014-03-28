@@ -12,14 +12,28 @@ import ca.synx.miway.interfaces.IListItem;
 
 public class Route implements IListItem, Serializable {
 
-    public String routeNumber;
-    public String routeName;
-    public String routeHeading;
+    private String routeNumber;
+
+    private String routeName;
+
+    private String routeHeading;
 
     public Route(String routeNumber, String routeName, String routeHeading) {
         this.routeNumber = routeNumber;
         this.routeName = routeName;
         this.routeHeading = routeHeading;
+    }
+
+    public String getRouteName() {
+        return this.routeName;
+    }
+
+    public String getRouteNumber() {
+        return this.routeNumber;
+    }
+
+    public String getRouteHeading() {
+        return this.routeHeading;
     }
 
     public String getTitle() {

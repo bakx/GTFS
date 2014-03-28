@@ -11,10 +11,10 @@ import java.io.Serializable;
 import ca.synx.miway.interfaces.IListItem;
 
 public class Stop implements IListItem, Serializable {
-    public String stopId;
-    public String stopName;
-    public int stopSequence;
-    public Route route;
+    private String stopId;
+    private String stopName;
+    private int stopSequence;
+    private Route route;
 
     public Stop(String stopId, String stopName, int stopSequence) {
         this.stopId = stopId;
@@ -22,10 +22,27 @@ public class Stop implements IListItem, Serializable {
         this.stopSequence = stopSequence;
     }
 
+    public Route getRoute() {
+        return this.route;
+    }
+
     public void setRoute(Route route) {
         this.route = route;
     }
 
+    public String getStopId() {
+        return this.stopId;
+    }
+
+    public String getStopName() {
+        return this.stopName;
+    }
+
+    public int getStopSequence() {
+        return this.stopSequence;
+    }
+
+    // ListView implementation.
     public String getTitle() {
         return this.stopName;
     }
@@ -34,6 +51,7 @@ public class Stop implements IListItem, Serializable {
         return this.stopId;
     }
 
+    // Misc.
     public String getFull() {
         return this.stopId + " - " + this.stopName;
     }

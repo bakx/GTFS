@@ -6,94 +6,92 @@
 
 package ca.synx.miway.Util;
 
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-import android.util.Log;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
 
-import ca.synx.miway.interfaces.IFavorite;
+import ca.synx.miway.models.Favorite;
+import ca.synx.miway.models.Route;
+import ca.synx.miway.models.Stop;
+import ca.synx.miway.tables.FavoriteTable;
 
-public class Favorites<T extends IFavorite> {
+public final class Favorites {
+
+    private DatabaseHandler mDatabaseHandler;
     private Context mContext;
 
     public Favorites(Context context) {
+        this.mDatabaseHandler = new DatabaseHandler(context);
         this.mContext = context;
     }
 
-    public void saveFavorite(T t) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(mContext.getApplicationContext());
+    public void saveFavorite(Favorite favorite) {
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SQLiteDatabase db = this.mDatabaseHandler.getWritableDatabase();
 
-        editor.putString(t.getID(), serializeObject(t));
-        editor.commit();
+        ContentValues values = new ContentValues();
+        values.put(FavoriteTable.COLUMN_FAVORITE_ID, UUID.randomUUID().toString());
+        values.put(FavoriteTable.COLUMN_STOP_ID, favorite.getStop().getStopId());
+        values.put(FavoriteTable.COLUMN_STOP_NAME, favorite.getStop().getStopName());
+        values.put(FavoriteTable.COLUMN_STOP_SEQUENCE, favorite.getStop().getStopSequence());
+        values.put(FavoriteTable.COLUMN_ROUTE_NUMBER, favorite.getStop().getRoute().getRouteNumber());
+        values.put(FavoriteTable.COLUMN_ROUTE_NAME, favorite.getStop().getRoute().getRouteName());
+        values.put(FavoriteTable.COLUMN_ROUTE_HEADING, favorite.getStop().getRoute().getRouteHeading());
+        values.put(FavoriteTable.COLUMN_STOP_ID, favorite.getStop().getStopId());
+
+        db.insert(FavoriteTable.TABLE_NAME, "", values);
     }
 
-    public void removeFavorite(String key) {
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(mContext.getApplicationContext());
+    public void removeFavorite(Favorite favorite) {
 
-        SharedPreferences.Editor editor = sharedPreferences.edit();
+        SQLiteDatabase db = this.mDatabaseHandler.getWritableDatabase();
 
-        editor.remove(key);
-        editor.commit();
+        db.delete(FavoriteTable.TABLE_NAME, FavoriteTable.COLUMN_FAVORITE_ID + " = ? ", new String[]{favorite.getId()});
     }
 
-    public List<T> getFavorites() {
+    public List<Favorite> getFavorites() {
 
-        List<T> list = new ArrayList<T>();
+        List<Favorite> list = new ArrayList<Favorite>();
 
-        SharedPreferences sharedPreferences = PreferenceManager
-                .getDefaultSharedPreferences(mContext.getApplicationContext());
+        SQLiteDatabase db = this.mDatabaseHandler.getReadableDatabase();
 
-        Map<String, ?> keys = sharedPreferences.getAll();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME, null);
 
-        for (Map.Entry<String, ?> entry : keys.entrySet()) {
+        if (cursor.moveToFirst()) {
 
-            T t = deserializeObject((String) entry.getValue());
-            if (null != t)
-                list.add(t);
+            while (cursor.isAfterLast() == false) {
+
+                Route route = new Route(
+                        cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_ROUTE_NUMBER)),
+                        cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_ROUTE_NAME)),
+                        cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_ROUTE_HEADING))
+                );
+
+                Stop stop = new Stop(
+                        cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_ID)),
+                        cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_NAME)),
+                        cursor.getInt(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_SEQUENCE))
+                );
+
+                stop.setRoute(route);
+
+                Favorite favorite = new Favorite(
+                        cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_FAVORITE_ID)),
+                        stop
+                );
+
+
+                list.add(favorite);
+                cursor.moveToNext();
+            }
         }
+
 
         return list;
-    }
-
-    private String serializeObject(T t) {
-        try {
-            ByteArrayOutputStream bo = new ByteArrayOutputStream();
-            ObjectOutputStream so = new ObjectOutputStream(bo);
-            so.writeObject(t);
-            so.flush();
-
-            return bo.toString();
-        } catch (Exception e) {
-            Log.e("Error while saving object to preferences", e.getMessage());
-        }
-
-        return "";
-    }
-
-    private T deserializeObject(String s) {
-        try {
-            byte b[] = s.getBytes();
-            ByteArrayInputStream bi = new ByteArrayInputStream(b);
-            ObjectInputStream si = new ObjectInputStream(bi);
-            T t = (T) si.readObject();
-
-            return t;
-        } catch (Exception e) {
-            Log.e("Error while saving object to preferences", e.getMessage());
-        }
-
-        return null;
     }
 }

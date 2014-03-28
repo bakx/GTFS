@@ -20,6 +20,8 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.synx.miway.Util.GTFSDataExchange;
+import ca.synx.miway.Util.GTFSParser;
 import ca.synx.miway.adapters.StopsAdapter;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;

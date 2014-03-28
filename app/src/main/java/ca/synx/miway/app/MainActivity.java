@@ -25,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ca.synx.miway.Util.Favorites;
+import ca.synx.miway.Util.GTFSDataExchange;
+import ca.synx.miway.Util.GTFSParser;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
 import ca.synx.miway.adapters.RoutesAdapter;
 import ca.synx.miway.models.Favorite;
@@ -105,7 +107,7 @@ public class MainActivity extends Activity {
             List<Favorite> favorites = new ArrayList<Favorite>();
 
             try {
-                favorites = new Favorites<Favorite>(context).getFavorites();
+                favorites = new Favorites(context).getFavorites();
             } catch (Exception e) {
                 e.printStackTrace();
             }

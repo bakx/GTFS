@@ -26,9 +26,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import ca.synx.miway.Util.Favorites;
+import ca.synx.miway.Util.GTFSDataExchange;
+import ca.synx.miway.Util.GTFSParser;
 import ca.synx.miway.adapters.SingleItemAdapter;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Stop;
@@ -73,7 +74,7 @@ public class StopTimesActivity extends ActionBarActivity {
         mStopName = (TextView) findViewById(R.id.stopName);
 
         //
-        mRouteName.setText(mStop.route.getFull());
+        mRouteName.setText(mStop.getRoute().getFull());
         mStopName.setText(mStop.getFull());
 
         // Execute task.
@@ -110,19 +111,17 @@ public class StopTimesActivity extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.action_add_favorite:
 
-                Favorites<Favorite> f = new Favorites<Favorite>(getApplicationContext());
-                f.saveFavorite(
-                        new Favorite(UUID.randomUUID().toString(),
-                                mStop.stopId,
-                                mStop.stopName,
-                                mStop.stopSequence,
-                                mStop.route)
-                );
+                new Favorites(getApplicationContext())
+                        .saveFavorite(new Favorite(mStop));
 
                 Toast.makeText(this, R.string.added_favorites, Toast.LENGTH_LONG).show();
                 return true;
 
             case R.id.action_remove_favorite:
+
+                new Favorites(getApplicationContext())
+                        .removeFavorite(new Favorite(mStop));
+
                 Toast.makeText(this, R.string.removed_favorites, Toast.LENGTH_LONG).show();
                 return true;
             default:
