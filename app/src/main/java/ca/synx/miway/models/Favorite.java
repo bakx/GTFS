@@ -7,15 +7,19 @@
 package ca.synx.miway.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import ca.synx.miway.interfaces.IDBItem;
+import ca.synx.miway.interfaces.IFavorite;
 import ca.synx.miway.interfaces.IListItem;
+import ca.synx.miway.interfaces.ITask;
 import ca.synx.miway.tables.FavoriteTable;
 
-public class Favorite implements IDBItem, IListItem, Serializable {
+public class Favorite implements IDBItem, IListItem, Serializable, IFavorite, ITask {
 
     private int mId;
     private Stop mStop;
+    private ArrayList<StopTime> mStopTimes;
 
     public Favorite() {
     }
@@ -27,10 +31,22 @@ public class Favorite implements IDBItem, IListItem, Serializable {
     public Favorite(int id, Stop stop) {
         this.mId = id;
         this.mStop = stop;
+
+        // THIS CODE SHOULD NOT BE HERE!  //HACK //TODO
+        //try {
+        //    new StopTimesTask(null, 3, this).execute(mStop).get(2, TimeUnit.SECONDS);
+        //}
+        //catch (Exception e) {
+        //    e.printStackTrace();
+        //}
     }
 
     public Stop getStop() {
         return this.mStop;
+    }
+
+    public ArrayList<StopTime> getStopTimes() {
+        return mStopTimes;
     }
 
     public String getTitle() {
@@ -67,6 +83,11 @@ public class Favorite implements IDBItem, IListItem, Serializable {
 
     public String DELETE_SQL_ENTRIES() {
         return "DROP TABLE IF EXIST " + FavoriteTable.TABLE_NAME + ";";
+    }
+
+    @Override
+    public void onTaskComplete(Object[] objects) {
+        mStopTimes = (ArrayList<StopTime>) objects[0];
     }
 }
 
