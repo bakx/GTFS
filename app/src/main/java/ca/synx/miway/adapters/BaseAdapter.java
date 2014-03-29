@@ -23,28 +23,28 @@ public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
     public int listViewResourceID;
     public boolean showNextIcon = true;
-    public List<T> list;
-    public Context context;
+    public List<T> mList;
+    public Context mContext;
 
     public BaseAdapter(List<T> list, int listViewResourceID, boolean showNextIcon, Context ctx) {
         super(ctx, listViewResourceID, list);
 
         this.listViewResourceID = listViewResourceID;
         this.showNextIcon = showNextIcon;
-        this.list = list;
-        this.context = ctx;
+        this.mList = list;
+        this.mContext = ctx;
     }
 
     public int getCount() {
-        return list.size();
+        return mList.size();
     }
 
     public T getItem(int position) {
-        return list.get(position);
+        return mList.get(position);
     }
 
     public long getItemId(int position) {
-        return list.get(position).hashCode();
+        return mList.get(position).hashCode();
     }
 
     public View getView(int position, View view, ViewGroup parent) {
@@ -54,7 +54,7 @@ public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
         Holder holder = new Holder();
 
         if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(listViewResourceID, null);
 
             if (!showNextIcon) {
@@ -73,7 +73,7 @@ public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
         }
 
         // Get position of list item.
-        t = list.get(position);
+        t = mList.get(position);
 
         // Update tag of view with object reference of object T
         v.setTag(R.id.tag_id_2, (T) t);

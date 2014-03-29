@@ -16,8 +16,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import ca.synx.miway.app.R;
+import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavorite;
-import ca.synx.miway.models.StopTime;
 
 public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter<Favorite> {
 
@@ -33,7 +33,7 @@ public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter
         Holder holder = new Holder();
 
         if (view == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(listViewResourceID, null);
 
             if (!showNextIcon) {
@@ -55,7 +55,7 @@ public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter
         }
 
         // Get position of list item.
-        favorite = list.get(position);
+        favorite = mList.get(position);
 
         // Update tag of view with object reference of object T
         v.setTag(R.id.tag_id_2, favorite);
@@ -64,28 +64,17 @@ public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter
         holder.title.setText(favorite.getTitle());
         holder.subtitle.setText(favorite.getSubtitle());
 
-        List<StopTime> nearestTimes = favorite.getStopTimes();
-
-        if (nearestTimes != null && !nearestTimes.isEmpty()) {
-
-            if (nearestTimes.get(0) != null)
-                holder.stoptime1.setText(nearestTimes.get(0).getTitle());
-            else
-                v.findViewById(R.id.stoptime1).setVisibility(View.GONE);
-
-            if (nearestTimes.get(1) != null)
-                holder.stoptime2.setText(nearestTimes.get(1).getTitle());
-            else
-                v.findViewById(R.id.stoptime2).setVisibility(View.GONE);
-
-            if (nearestTimes.get(2) != null)
-                holder.stoptime3.setText(nearestTimes.get(2).getTitle());
-            else
-                v.findViewById(R.id.stoptime3).setVisibility(View.GONE);
+        if (null == favorite.getNearestStopTimes())
+            favorite.loadStopTimes((IDataUpdate) mContext);
+        else {
+            holder.stoptime1.setText(favorite.getNearestStopTimes().get(0).getTitle());
+            holder.stoptime2.setText(favorite.getNearestStopTimes().get(1).getTitle());
+            holder.stoptime3.setText(favorite.getNearestStopTimes().get(2).getTitle());
         }
 
         return v;
     }
+
 
     private static class Holder {
         public TextView title;

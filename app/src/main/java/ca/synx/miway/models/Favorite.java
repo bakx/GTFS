@@ -7,18 +7,21 @@
 package ca.synx.miway.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.List;
 
+import ca.synx.miway.Tasks.StopTimesTask;
 import ca.synx.miway.interfaces.IDBItem;
+import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavorite;
-import ca.synx.miway.interfaces.IListItem;
+import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.tables.FavoriteTable;
 
-public class Favorite implements IDBItem, IListItem, Serializable, IFavorite {
-
+public class Favorite implements IDBItem, Serializable, IFavorite, IStopTimesTask {
     private int mId;
     private Stop mStop;
-    private ArrayList<StopTime> mStopTimes;
+    private List<StopTime> mNearestStopTimes;
+    private List<StopTime> mStopTimes;
+    private IDataUpdate mDataUpdateListener;
 
     public Favorite() {
     }
@@ -30,24 +33,28 @@ public class Favorite implements IDBItem, IListItem, Serializable, IFavorite {
     public Favorite(int id, Stop stop) {
         this.mId = id;
         this.mStop = stop;
-
-        // THIS CODE SHOULD NOT BE HERE!  //HACK //TODO
-        //try {
-        //    new StopTimesTask(null, 3, this).execute(mStop).get(2, TimeUnit.SECONDS);
-        //}
-        //catch (Exception e) {
-        //    e.printStackTrace();
-        //}
     }
 
     public Stop getStop() {
         return this.mStop;
     }
 
-    public ArrayList<StopTime> getStopTimes() {
-        return mStopTimes;
+    public void setStopTimes(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
+        this.mNearestStopTimes = nearestStopTimes;
+        this.mStopTimes = stopTimes;
     }
 
+    /* <Implementation of interface IDBItem> */
+    public int getId() {
+        return mId;
+    }
+
+    public void setId(int id) {
+        this.mId = id;
+    }
+    /* </Implementation of interface IDBItem> */
+
+    /* <Implementation of interface IFavorite> */
     public String getTitle() {
         return this.mStop.getRoute().getFull();
     }
@@ -56,13 +63,19 @@ public class Favorite implements IDBItem, IListItem, Serializable, IFavorite {
         return this.mStop.getStopName();
     }
 
-    public int getId() {
-        return mId;
+    public List<StopTime> getStopTimes() {
+        return mStopTimes;
     }
 
-    public void setId(int id) {
-        this.mId = id;
+    public List<StopTime> getNearestStopTimes() {
+        return mNearestStopTimes;
     }
+
+    public void loadStopTimes(IDataUpdate dataUpdate) {
+        this.mDataUpdateListener = dataUpdate;
+        new StopTimesTask(3, this).execute(mStop);
+    }
+    /* </Implementation of interface IFavorite> */
 
     public String CREATE_SQL_ENTRIES() {
         return "CREATE TABLE " + FavoriteTable.TABLE_NAME + " (" +
@@ -80,5 +93,10 @@ public class Favorite implements IDBItem, IListItem, Serializable, IFavorite {
         return "DROP TABLE IF EXIST " + FavoriteTable.TABLE_NAME + ";";
     }
 
+    @Override
+    public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
+        setStopTimes(nearestStopTimes, stopTimes);
+        mDataUpdateListener.onDataUpdate();
+    }
 }
 

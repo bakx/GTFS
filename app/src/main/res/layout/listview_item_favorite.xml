@@ -16,7 +16,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:padding="3dp"
-        android:text="Sample Title"
+        android:text="Title"
         android:textSize="20dp"
         android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"
         android:padding="3dp"
-        android:text="The name of the stop"
+        android:text="subtitle"
         android:textSize="17dp" />
 
     <TableLayout
@@ -50,30 +50,28 @@
                 android:layout_weight="1"
                 android:gravity="left"
                 android:padding="3dp"
-                android:text="1:22 PM (2 min)"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/stoptime2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:layout_weight="2"
                 android:gravity="center"
                 android:padding="3dp"
-                android:text="1:22 PM (2 min)"
-                android:textSize="14dp" />
+                android:text="@string/loading"
+                android:textSize="13dp" />
 
             <TextView
                 android:id="@+id/stoptime3"
-                android:layout_width="fill_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:layout_weight="2"
+                android:layout_weight="3"
                 android:gravity="right"
                 android:padding="3dp"
-                android:text="1:22 PM (2 min)"
-                android:textSize="14dp" />
+                android:textSize="13dp" />
 
         </TableRow>
 

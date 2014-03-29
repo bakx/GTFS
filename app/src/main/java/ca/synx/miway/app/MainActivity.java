@@ -19,18 +19,20 @@ import android.widget.TabHost;
 
 import java.util.List;
 
+import ca.synx.miway.Tasks.FavoritesTask;
+import ca.synx.miway.Tasks.RoutesTask;
+import ca.synx.miway.Util.DatabaseHandler;
 import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
+import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavoriteTask;
 import ca.synx.miway.interfaces.IRouteTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
-import ca.synx.miway.tasks.FavoritesTask;
-import ca.synx.miway.tasks.RoutesTask;
-import ca.synx.miway.util.DatabaseHandler;
 
-public class MainActivity extends Activity implements IFavoriteTask, IRouteTask {
-
+public class MainActivity extends Activity implements IFavoriteTask, IRouteTask, IDataUpdate {
+    private FavoriteItemAdapter<Favorite> mFavoritesAdapter;
+    private BaseAdapter<Route> mRoutesAdapter;
     private DatabaseHandler mDatabaseHandler;
     private Context mContext;
     private TabHost mTabHost;
@@ -94,8 +96,8 @@ public class MainActivity extends Activity implements IFavoriteTask, IRouteTask 
 
     @Override
     public void onFavoriteTaskComplete(List<Favorite> favorites) {
-        FavoriteItemAdapter<Favorite> adapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, mContext);
-        mFavoritesListView.setAdapter(adapter);
+        mFavoritesAdapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, mContext);
+        mFavoritesListView.setAdapter(mFavoritesAdapter);
         mFavoritesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -116,8 +118,8 @@ public class MainActivity extends Activity implements IFavoriteTask, IRouteTask 
 
     @Override
     public void onRouteTaskComplete(List<Route> routes) {
-        BaseAdapter<Route> adapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
-        mRoutesListView.setAdapter(adapter);
+        mRoutesAdapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
+        mRoutesListView.setAdapter(mRoutesAdapter);
         mRoutesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -134,5 +136,10 @@ public class MainActivity extends Activity implements IFavoriteTask, IRouteTask 
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void onDataUpdate() {
+        mFavoritesAdapter.notifyDataSetChanged();
     }
 }

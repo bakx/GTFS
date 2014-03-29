@@ -27,6 +27,7 @@
     <!-- sort out -->
     <string name="connection_error">Unable to load content. Check your network connection.</string>
     <string name="xml_error">Error parsing XML.</string>
+    <string name="loading">Loading data, please wait...</string>
 
     <item name="tag_id_1" type="id"></item>
     <item name="tag_id_2" type="id"></item>

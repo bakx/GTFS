@@ -35,7 +35,7 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
         if (view == null) {
 
             // Inflate the new layout
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.listview_item_single, null);
 
             if (!showNextIcon) {
@@ -53,7 +53,7 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
             holder = (Holder) v.getTag(R.id.tag_id_1);
         }
 
-        t = list.get(position);
+        t = mList.get(position);
 
         v.setTag(R.id.tag_id_2, (T) t);
 

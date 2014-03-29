@@ -11,11 +11,8 @@ import java.io.Serializable;
 import ca.synx.miway.interfaces.IListItem;
 
 public class Route implements IListItem, Serializable {
-
     private String routeNumber;
-
     private String routeName;
-
     private String routeHeading;
 
     public Route(String routeNumber, String routeName, String routeHeading) {

@@ -4,26 +4,26 @@
  *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ca.synx.miway.tasks;
+package ca.synx.miway.Tasks;
 
 import android.os.AsyncTask;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import ca.synx.miway.Util.DatabaseHandler;
+import ca.synx.miway.Util.FavoritesHandler;
 import ca.synx.miway.interfaces.IFavoriteTask;
 import ca.synx.miway.models.Favorite;
-import ca.synx.miway.util.DatabaseHandler;
-import ca.synx.miway.util.FavoritesHandler;
 
 public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
 
     private DatabaseHandler mDatabaseHandler;
-    private IFavoriteTask mListener;
+    private IFavoriteTask mFavoriteListener;
 
-    public FavoritesTask(DatabaseHandler databaseHandler, IFavoriteTask listener) {
+    public FavoritesTask(DatabaseHandler databaseHandler, IFavoriteTask favoriteListener) {
         this.mDatabaseHandler = databaseHandler;
-        this.mListener = listener;
+        this.mFavoriteListener = favoriteListener;
     }
 
     @Override
@@ -44,6 +44,6 @@ public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
     protected void onPostExecute(List<Favorite> favorites) {
         super.onPostExecute(favorites);
 
-        mListener.onFavoriteTaskComplete(favorites);
+        mFavoriteListener.onFavoriteTaskComplete(favorites);
     }
 }
