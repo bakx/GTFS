@@ -6,6 +6,10 @@
 
 package ca.synx.miway.interfaces;
 
-public interface ITask {
-    void onTaskComplete(Object[] objects);
+import java.util.List;
+
+import ca.synx.miway.models.Favorite;
+
+public interface IFavoriteTask {
+    void onFavoriteTaskComplete(List<Favorite> favorites);
 }

@@ -4,12 +4,12 @@
  *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ca.synx.miway.Util;
+package ca.synx.miway.util;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,35 +22,45 @@ import ca.synx.miway.tables.FavoriteTable;
 public final class FavoritesHandler {
 
     private DatabaseHandler mDatabaseHandler;
-    private Context mContext;
 
-    public FavoritesHandler(Context context) {
-        this.mDatabaseHandler = new DatabaseHandler(context);
-        this.mContext = context;
+    public FavoritesHandler(DatabaseHandler databaseHandler) {
+        this.mDatabaseHandler = databaseHandler;
     }
 
     public void saveFavorite(Favorite favorite) {
 
         SQLiteDatabase db = this.mDatabaseHandler.getWritableDatabase();
 
-        ContentValues values = new ContentValues();
-        values.put(FavoriteTable.COLUMN_STOP_ID, favorite.getStop().getStopId());
-        values.put(FavoriteTable.COLUMN_STOP_NAME, favorite.getStop().getStopName());
-        values.put(FavoriteTable.COLUMN_STOP_SEQUENCE, favorite.getStop().getStopSequence());
-        values.put(FavoriteTable.COLUMN_ROUTE_NUMBER, favorite.getStop().getRoute().getRouteNumber());
-        values.put(FavoriteTable.COLUMN_ROUTE_NAME, favorite.getStop().getRoute().getRouteName());
-        values.put(FavoriteTable.COLUMN_ROUTE_HEADING, favorite.getStop().getRoute().getRouteHeading());
+        try {
+            ContentValues values = new ContentValues();
+            values.put(FavoriteTable.COLUMN_STOP_ID, favorite.getStop().getStopId());
+            values.put(FavoriteTable.COLUMN_STOP_NAME, favorite.getStop().getStopName());
+            values.put(FavoriteTable.COLUMN_STOP_SEQUENCE, favorite.getStop().getStopSequence());
+            values.put(FavoriteTable.COLUMN_ROUTE_NUMBER, favorite.getStop().getRoute().getRouteNumber());
+            values.put(FavoriteTable.COLUMN_ROUTE_NAME, favorite.getStop().getRoute().getRouteName());
+            values.put(FavoriteTable.COLUMN_ROUTE_HEADING, favorite.getStop().getRoute().getRouteHeading());
 
-        long insertId = db.insert(FavoriteTable.TABLE_NAME, null, values);
-        favorite.setId((int) insertId);
+            long insertId = db.insert(FavoriteTable.TABLE_NAME, null, values);
+            favorite.setId((int) insertId);
+        } catch (Exception e) {
+            Log.e("isFavorite", e.getMessage());
+        } finally {
+            db.close();
+        }
     }
 
     public void removeFavorite(Favorite favorite) {
 
         SQLiteDatabase db = this.mDatabaseHandler.getWritableDatabase();
 
-        db.delete(FavoriteTable.TABLE_NAME, FavoriteTable.COLUMN_FAVORITE_ID + "=" + favorite.getId(), null);
-        favorite.setId(0);
+        try {
+            db.delete(FavoriteTable.TABLE_NAME, FavoriteTable.COLUMN_FAVORITE_ID + "=" + favorite.getId(), null);
+            favorite.setId(0);
+        } catch (Exception e) {
+            Log.e("isFavorite", e.getMessage());
+        } finally {
+            db.close();
+        }
     }
 
     public Boolean isFavorite(Favorite favorite) {
@@ -86,6 +96,8 @@ public final class FavoritesHandler {
                 favorite.setId(cursor.getInt(cursor.getColumnIndex(FavoriteTable.COLUMN_FAVORITE_ID)));
                 return true;
             }
+        } catch (Exception e) {
+            Log.e("isFavorite", e.getMessage());
         } finally {
             db.close();
         }

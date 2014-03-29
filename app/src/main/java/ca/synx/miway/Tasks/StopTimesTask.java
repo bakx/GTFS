@@ -4,9 +4,8 @@
  *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ca.synx.miway.Tasks;
+package ca.synx.miway.tasks;
 
-import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -18,20 +17,18 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import ca.synx.miway.Util.GTFSDataExchange;
-import ca.synx.miway.Util.GTFSParser;
-import ca.synx.miway.interfaces.ITask;
+import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
+import ca.synx.miway.util.GTFSDataExchange;
+import ca.synx.miway.util.GTFSParser;
 
 public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
     private int mNextStopTimesCount;
-    private Context mContext;
-    private ITask mListener;
+    private IStopTimesTask mListener;
 
-    public StopTimesTask(Context context, int nextStopTimesCount, ITask listener) {
-        this.mContext = context;
+    public StopTimesTask(int nextStopTimesCount, IStopTimesTask listener) {
         this.mNextStopTimesCount = nextStopTimesCount;
         this.mListener = listener;
     }
@@ -75,18 +72,16 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
             }
         }
 
-        this.mListener.onTaskComplete(
-                new Object[]{
-                        getNearestStopTimes(stopTimes, mNextStopTimesCount),
-                        stopTimes
-                }
+        mListener.onStopTimesTaskComplete(
+                getNearestStopTimes(stopTimes, mNextStopTimesCount),
+                stopTimes
         );
     }
 
     protected List<StopTime> getNearestStopTimes(List<StopTime> source, int targetCount) {
         List<StopTime> nearestStopTimes = new ArrayList<StopTime>();
 
-        Date currentDate = null;
+        Date currentDate;
 
         //
         // Get current time stamp as date
@@ -99,7 +94,7 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                     )
             );
         } catch (Exception e) {
-            Log.v("getNearestStopTimes currentDate error", e.getMessage());
+            Log.e("getNearestStopTimes currentDate error", e.getMessage());
             return nearestStopTimes;
         }
 
@@ -127,7 +122,7 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                 // time difference is 0, are valid. Keep adding them until we reach 'targetCount'
                 nearestStopTimes.add(stopTime);
             } catch (Exception e) {
-                Log.v("getNearestStopTimes departureTime parsing error", e.getMessage());
+                Log.e("getNearestStopTimes departureTime parsing error", e.getMessage());
             }
 
             if (nearestStopTimes.size() >= targetCount)

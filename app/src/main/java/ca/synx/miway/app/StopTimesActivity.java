@@ -6,6 +6,7 @@
 
 package ca.synx.miway.app;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -16,29 +17,30 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.Tasks.StopTimesTask;
-import ca.synx.miway.Util.FavoritesHandler;
 import ca.synx.miway.adapters.SingleItemAdapter;
-import ca.synx.miway.interfaces.ITask;
+import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
+import ca.synx.miway.tasks.StopTimesTask;
+import ca.synx.miway.util.DatabaseHandler;
+import ca.synx.miway.util.FavoritesHandler;
 
-public class StopTimesActivity extends ActionBarActivity implements ITask {
+public class StopTimesActivity extends ActionBarActivity implements IStopTimesTask {
     static final String FAVORITE_DATA = "favoriteData";
     static final String STOP_DATA = "stopData";
 
-    Stop mStop;
-    Favorite mFavorite;
+    private Stop mStop;
+    private Favorite mFavorite;
+    private Context mContext;
 
-    TextView mRouteName;
-    TextView mStopName;
-    ListView mNextStopTimesListView;
-    ListView mStopTimesListView;
-    Menu mMenu;
+    private TextView mRouteName;
+    private TextView mStopName;
+    private ListView mNextStopTimesListView;
+    private ListView mStopTimesListView;
+    private DatabaseHandler mDatabaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +61,9 @@ public class StopTimesActivity extends ActionBarActivity implements ITask {
     protected void onStart() {
         super.onStart();
 
+        mContext = this;
+        mDatabaseHandler = new DatabaseHandler(this);
+
         // Set up class..
         mNextStopTimesListView = (ListView) findViewById(R.id.nextStopTimesListView);
         mStopTimesListView = (ListView) findViewById(R.id.stopTimesListView);
@@ -71,10 +76,10 @@ public class StopTimesActivity extends ActionBarActivity implements ITask {
 
         // Check favorite..
         mFavorite = new Favorite(mStop);
-        new FavoritesHandler(this).isFavorite(mFavorite);
+        new FavoritesHandler(mDatabaseHandler).isFavorite(mFavorite);
 
         // Execute task.
-        new StopTimesTask(this, 5, this).execute(mStop);
+        new StopTimesTask(5, this).execute(mStop);
     }
 
     @Override
@@ -97,8 +102,6 @@ public class StopTimesActivity extends ActionBarActivity implements ITask {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        mMenu = menu;
-
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.stoptimes, menu);
         return super.onCreateOptionsMenu(menu);
@@ -124,22 +127,22 @@ public class StopTimesActivity extends ActionBarActivity implements ITask {
         switch (item.getItemId()) {
             case R.id.action_add_favorite:
 
-                new FavoritesHandler(getApplicationContext())
+                new FavoritesHandler(mDatabaseHandler)
                         .saveFavorite(mFavorite);
 
                 handleFavorite();
 
-                Toast.makeText(this, R.string.added_favorites, Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, R.string.added_favorites, Toast.LENGTH_LONG).show();
                 return true;
 
             case R.id.action_remove_favorite:
 
-                new FavoritesHandler(getApplicationContext())
+                new FavoritesHandler(mDatabaseHandler)
                         .removeFavorite(mFavorite);
 
                 handleFavorite();
 
-                Toast.makeText(this, R.string.removed_favorites, Toast.LENGTH_LONG).show();
+                Toast.makeText(mContext, R.string.removed_favorites, Toast.LENGTH_LONG).show();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -151,15 +154,11 @@ public class StopTimesActivity extends ActionBarActivity implements ITask {
     }
 
     @Override
-    public void onTaskComplete(Object[] objects) {
-
-        List<StopTime> nearestTime = (ArrayList<StopTime>) objects[0];
-        List<StopTime> stopTimes = (ArrayList<StopTime>) objects[1];
-
-        SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nearestTime, R.layout.listview_item_single, false, this);
+    public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
+        SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nearestStopTimes, R.layout.listview_item_single, false, mContext);
         mNextStopTimesListView.setAdapter(adapter);
 
-        adapter = new SingleItemAdapter<StopTime>(stopTimes, R.layout.listview_item_single, false, this);
+        adapter = new SingleItemAdapter<StopTime>(stopTimes, R.layout.listview_item_single, false, mContext);
         mStopTimesListView.setAdapter(adapter);
     }
 }

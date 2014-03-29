@@ -9,42 +9,41 @@ package ca.synx.miway.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TabHost;
 
-import org.json.JSONException;
-
-import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.Util.FavoritesHandler;
-import ca.synx.miway.Util.GTFSDataExchange;
-import ca.synx.miway.Util.GTFSParser;
 import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
+import ca.synx.miway.interfaces.IFavoriteTask;
+import ca.synx.miway.interfaces.IRouteTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
+import ca.synx.miway.tasks.FavoritesTask;
+import ca.synx.miway.tasks.RoutesTask;
+import ca.synx.miway.util.DatabaseHandler;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements IFavoriteTask, IRouteTask {
 
-    TabHost mTabHost;
-    ListView mFavoritesListView;
-    ListView mRoutesListView;
-
-    List<Favorite> favorites;
+    private DatabaseHandler mDatabaseHandler;
+    private Context mContext;
+    private TabHost mTabHost;
+    private ListView mFavoritesListView;
+    private ListView mRoutesListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        mContext = this;
+        mDatabaseHandler = new DatabaseHandler(this);
 
         // Init tabs
         initializeTabs();
@@ -87,104 +86,53 @@ public class MainActivity extends Activity {
         mRoutesListView = (ListView) findViewById(R.id.routesListView);
 
         // Prepare favorites.
-        new FavoritesTask(this).execute();
+        new FavoritesTask(mDatabaseHandler, this).execute();
 
         // Fetch Routes from online web service.
-        new GTFSRouteTask(this).execute();
+        new RoutesTask(this).execute();
     }
 
-    private class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
+    @Override
+    public void onFavoriteTaskComplete(List<Favorite> favorites) {
+        FavoriteItemAdapter<Favorite> adapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, mContext);
+        mFavoritesListView.setAdapter(adapter);
+        mFavoritesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        private Context context;
+                // Get tag from clicked view.
+                Favorite favorite = (Favorite) view.getTag(R.id.tag_id_2);
 
-        public FavoritesTask(Context context) {
-            this.context = context;
-        }
+                // Create new intent.
+                Intent intent = new Intent(mContext, StopTimesActivity.class);
 
-        @Override
-        protected List<Favorite> doInBackground(String... params) {
+                // Pass selected data.
+                intent.putExtra("stopData", favorite.getStop());
 
-            List<Favorite> favorites = new ArrayList<Favorite>();
-
-            try {
-                favorites = new FavoritesHandler(context).getFavorites();
-            } catch (Exception e) {
-                e.printStackTrace();
+                // Start the intent.
+                startActivity(intent);
             }
-
-            return favorites;
-        }
-
-        @Override
-        protected void onPostExecute(List<Favorite> favorites) {
-            super.onPostExecute(favorites);
-
-            FavoriteItemAdapter<Favorite> adapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, context);
-            mFavoritesListView.setAdapter(adapter);
-            mFavoritesListView.setOnItemClickListener(new OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    // Get tag from clicked view.
-                    Favorite favorite = (Favorite) view.getTag(R.id.tag_id_2);
-
-                    // Create new intent.
-                    Intent intent = new Intent(context, StopTimesActivity.class);
-
-                    // Pass selected data.
-                    intent.putExtra("stopData", favorite.getStop());
-
-                    // Start the intent.
-                    startActivity(intent);
-                }
-            });
-        }
+        });
     }
 
-    private class GTFSRouteTask extends AsyncTask<String, Void, List<Route>> {
+    @Override
+    public void onRouteTaskComplete(List<Route> routes) {
+        BaseAdapter<Route> adapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
+        mRoutesListView.setAdapter(adapter);
+        mRoutesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        private Context mContext;
+                // Get tag from clicked view.
+                Route route = (Route) view.getTag(R.id.tag_id_2);
 
-        public GTFSRouteTask(Context context) {
-            this.mContext = context;
-        }
+                // Create new intent.
+                Intent intent = new Intent(mContext, StopsActivity.class);
 
-        @Override
-        protected List<Route> doInBackground(String... params) {
-            List<Route> routes = new ArrayList<Route>();
-            String data = (new GTFSDataExchange("miway").getRouteData());
+                // Pass selected data.
+                intent.putExtra("routeData", route);
 
-            try {
-                routes = GTFSParser.getRoutes(data);
-
-            } catch (JSONException e) {
-                Log.v("GTFSRouteTask->doInBackground", e.getMessage());
-                e.printStackTrace();
+                // Start the intent.
+                startActivity(intent);
             }
-            return routes;
-        }
-
-        @Override
-        protected void onPostExecute(List<Route> routes) {
-            super.onPostExecute(routes);
-
-            BaseAdapter<Route> adapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
-            mRoutesListView.setAdapter(adapter);
-            mRoutesListView.setOnItemClickListener(new OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    // Get tag from clicked view.
-                    Route route = (Route) view.getTag(R.id.tag_id_2);
-
-                    // Create new intent.
-                    Intent intent = new Intent(mContext, StopsActivity.class);
-
-                    // Pass selected data.
-                    intent.putExtra("routeData", route);
-
-                    // Start the intent.
-                    startActivity(intent);
-                }
-            });
-        }
+        });
     }
 }

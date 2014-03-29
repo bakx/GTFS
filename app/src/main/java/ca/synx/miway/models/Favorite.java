@@ -12,10 +12,9 @@ import java.util.ArrayList;
 import ca.synx.miway.interfaces.IDBItem;
 import ca.synx.miway.interfaces.IFavorite;
 import ca.synx.miway.interfaces.IListItem;
-import ca.synx.miway.interfaces.ITask;
 import ca.synx.miway.tables.FavoriteTable;
 
-public class Favorite implements IDBItem, IListItem, Serializable, IFavorite, ITask {
+public class Favorite implements IDBItem, IListItem, Serializable, IFavorite {
 
     private int mId;
     private Stop mStop;
@@ -57,10 +56,6 @@ public class Favorite implements IDBItem, IListItem, Serializable, IFavorite, IT
         return this.mStop.getStopName();
     }
 
-    public String getFull() {
-        return this.mStop.getRoute().getRouteNumber() + this.mStop.getRoute().getRouteHeading().substring(0, 1) + " - " + this.mStop.getRoute().getRouteName();
-    }
-
     public int getId() {
         return mId;
     }
@@ -85,9 +80,5 @@ public class Favorite implements IDBItem, IListItem, Serializable, IFavorite, IT
         return "DROP TABLE IF EXIST " + FavoriteTable.TABLE_NAME + ";";
     }
 
-    @Override
-    public void onTaskComplete(Object[] objects) {
-        mStopTimes = (ArrayList<StopTime>) objects[0];
-    }
 }
 

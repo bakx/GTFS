@@ -4,7 +4,7 @@
  *  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-package ca.synx.miway.Util;
+package ca.synx.miway.util;
 
 import android.util.Log;
 
@@ -28,16 +28,16 @@ public class GTFSDataExchange {
     private static String GET_ROUTES_URL = "/api/GTFS/GetRoutes/%s";
     private static String GET_STOPS_URL = "/api/GTFS/GetStops/%s/%s/%s";
     private static String GET_STOP_TIMES_URL = "/api/GTFS/GetStops/%s/%s/%s/%s";
-    private String transitCompany;
+    private String mTransitCompany;
 
     public GTFSDataExchange(String transitCompany) {
-        this.transitCompany = transitCompany;
+        this.mTransitCompany = transitCompany;
     }
 
     private String getData(String dataURL) {
 
         HttpClient client;
-        String result = "";
+        String result;
 
         try {
             client = new DefaultHttpClient();
@@ -46,7 +46,7 @@ public class GTFSDataExchange {
 
             BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"), 8);
             StringBuilder sb = new StringBuilder();
-            String line = null;
+            String line;
             while ((line = reader.readLine()) != null) {
                 sb.append(line);
             }
@@ -79,6 +79,6 @@ public class GTFSDataExchange {
     }
 
     private String getServiceTimeStamp() {
-        return new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime()).toString();
+        return new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
     }
 }
