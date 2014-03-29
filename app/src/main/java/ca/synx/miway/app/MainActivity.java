@@ -19,9 +19,6 @@ import android.widget.TabHost;
 
 import java.util.List;
 
-import ca.synx.miway.Tasks.FavoritesTask;
-import ca.synx.miway.Tasks.RoutesTask;
-import ca.synx.miway.Util.DatabaseHandler;
 import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
 import ca.synx.miway.interfaces.IDataUpdate;
@@ -29,6 +26,9 @@ import ca.synx.miway.interfaces.IFavoriteTask;
 import ca.synx.miway.interfaces.IRouteTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
+import ca.synx.miway.tasks.FavoritesTask;
+import ca.synx.miway.tasks.RoutesTask;
+import ca.synx.miway.util.DatabaseHandler;
 
 public class MainActivity extends Activity implements IFavoriteTask, IRouteTask, IDataUpdate {
     private FavoriteItemAdapter<Favorite> mFavoritesAdapter;

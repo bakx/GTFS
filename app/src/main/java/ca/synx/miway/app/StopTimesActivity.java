@@ -19,14 +19,14 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ca.synx.miway.Tasks.StopTimesTask;
-import ca.synx.miway.Util.DatabaseHandler;
-import ca.synx.miway.Util.FavoritesHandler;
 import ca.synx.miway.adapters.SingleItemAdapter;
 import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
+import ca.synx.miway.tasks.StopTimesTask;
+import ca.synx.miway.util.DatabaseHandler;
+import ca.synx.miway.util.FavoritesHandler;
 
 public class StopTimesActivity extends ActionBarActivity implements IStopTimesTask {
     static final String FAVORITE_DATA = "favoriteData";

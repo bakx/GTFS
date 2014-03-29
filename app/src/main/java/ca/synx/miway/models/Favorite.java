@@ -9,12 +9,12 @@ package ca.synx.miway.models;
 import java.io.Serializable;
 import java.util.List;
 
-import ca.synx.miway.Tasks.StopTimesTask;
 import ca.synx.miway.interfaces.IDBItem;
 import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavorite;
 import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.tables.FavoriteTable;
+import ca.synx.miway.tasks.StopTimesTask;
 
 public class Favorite implements IDBItem, Serializable, IFavorite, IStopTimesTask {
     private int mId;
