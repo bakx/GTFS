@@ -60,6 +60,20 @@ public class MainActivity extends Activity implements IFavoritesTask, IRoutesTas
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
+        mRoutesListView = (ListView) findViewById(R.id.routesListView);
+
+        // Prepare favorites.
+        new FavoritesTask(mDatabaseHandler, this).execute();
+
+        // Fetch Routes from online web service.
+        new RoutesTask(this, mStorageHandler).execute();
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -91,15 +105,6 @@ public class MainActivity extends Activity implements IFavoritesTask, IRoutesTas
                         .setIndicator(getResources().getString(R.string.tab_routes)
                         )
         );
-
-        mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
-        mRoutesListView = (ListView) findViewById(R.id.routesListView);
-
-        // Prepare favorites.
-        new FavoritesTask(mDatabaseHandler, this).execute();
-
-        // Fetch Routes from online web service.
-        new RoutesTask(this, mStorageHandler).execute();
     }
 
     @Override

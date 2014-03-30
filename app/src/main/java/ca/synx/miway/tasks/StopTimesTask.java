@@ -116,6 +116,8 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
         // Loop through all departure times to find best match
         //
 
+        boolean foundMatch = false;
+
         for (StopTime stopTime : source) {
 
             try {
@@ -126,9 +128,17 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
                 long timeDifference = (stopDate.getTime() - currentDate.getTime()) / (60 * 1000);
 
-                // If vehicle is already gone, continue.
-                if (timeDifference < 0)
+                // Match not found, vehicle has left. Skip item.
+                if (timeDifference < 0 && !foundMatch)
                     continue;
+                else if (foundMatch && timeDifference < 0)
+                    // If the current time is
+                    // prior to midnight, anything after midnight would render a time difference smaller than 0 after
+                    // a match is found. To solve this problem we add minutes equivalent to 1 day (24 * 60).
+                    timeDifference = timeDifference + (24 * 60);
+
+                // Change flag of 'foundMatch' to support stop times after midnight.
+                foundMatch = true;
 
                 StopTime nearStopTime = new StopTime(
                         stopTime.getArrivalTime(),
