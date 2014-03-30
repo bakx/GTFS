@@ -22,19 +22,25 @@ import java.util.List;
 import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
 import ca.synx.miway.interfaces.IDataUpdate;
-import ca.synx.miway.interfaces.IFavoriteTask;
-import ca.synx.miway.interfaces.IRouteTask;
+import ca.synx.miway.interfaces.IFavoritesTask;
+import ca.synx.miway.interfaces.IRoutesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.tasks.FavoritesTask;
 import ca.synx.miway.tasks.RoutesTask;
+import ca.synx.miway.util.CacheHandler;
 import ca.synx.miway.util.DatabaseHandler;
 
-public class MainActivity extends Activity implements IFavoriteTask, IRouteTask, IDataUpdate {
+public class MainActivity extends Activity implements IFavoritesTask, IRoutesTask, IDataUpdate {
+
+    private Context mContext;
+
     private FavoriteItemAdapter<Favorite> mFavoritesAdapter;
     private BaseAdapter<Route> mRoutesAdapter;
+
     private DatabaseHandler mDatabaseHandler;
-    private Context mContext;
+    private CacheHandler mCacheHandler;
+
     private TabHost mTabHost;
     private ListView mFavoritesListView;
     private ListView mRoutesListView;
@@ -46,6 +52,7 @@ public class MainActivity extends Activity implements IFavoriteTask, IRouteTask,
 
         mContext = this;
         mDatabaseHandler = new DatabaseHandler(this);
+        mCacheHandler = new CacheHandler(mDatabaseHandler);
 
         // Init tabs
         initializeTabs();
@@ -91,11 +98,11 @@ public class MainActivity extends Activity implements IFavoriteTask, IRouteTask,
         new FavoritesTask(mDatabaseHandler, this).execute();
 
         // Fetch Routes from online web service.
-        new RoutesTask(this).execute();
+        new RoutesTask(this, mCacheHandler).execute();
     }
 
     @Override
-    public void onFavoriteTaskComplete(List<Favorite> favorites) {
+    public void onFavoritesTaskComplete(List<Favorite> favorites) {
         mFavoritesAdapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, mContext);
         mFavoritesListView.setAdapter(mFavoritesAdapter);
         mFavoritesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -117,7 +124,7 @@ public class MainActivity extends Activity implements IFavoriteTask, IRouteTask,
     }
 
     @Override
-    public void onRouteTaskComplete(List<Route> routes) {
+    public void onRoutesTaskComplete(List<Route> routes) {
         mRoutesAdapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
         mRoutesListView.setAdapter(mRoutesAdapter);
         mRoutesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

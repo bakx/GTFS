@@ -9,27 +9,24 @@ package ca.synx.miway.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import org.json.JSONException;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import ca.synx.miway.adapters.BaseAdapter;
+import ca.synx.miway.interfaces.IStopsTask;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
-import ca.synx.miway.util.GTFSDataExchange;
-import ca.synx.miway.util.GTFSParser;
+import ca.synx.miway.tasks.StopsTask;
 
-public class StopsActivity extends Activity {
+public class StopsActivity extends Activity implements IStopsTask {
 
     static final String ROUTE_DATA = "routeData";
 
+    Context mContext;
     Route mRoute;
     ListView mStopsListView;
 
@@ -37,6 +34,8 @@ public class StopsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_listview);
+
+        mContext = this;
 
         // Set up class..
         mStopsListView = (ListView) findViewById(R.id.listView);
@@ -61,7 +60,7 @@ public class StopsActivity extends Activity {
         setTitle(String.format(getTitle().toString(), mRoute.getTitle(), mRoute.getSubtitle()));
 
         // Execute task.
-        new GTFSStopTask(this).execute(mRoute);
+        new StopsTask(this).execute(mRoute);
     }
 
     @Override
@@ -81,58 +80,26 @@ public class StopsActivity extends Activity {
         mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
     }
 
-    private class GTFSStopTask extends AsyncTask<Route, Void, List<Stop>> {
 
-        private Context mContext;
+    @Override
+    public void onStopsTaskComplete(List<Stop> stops) {
+        BaseAdapter<Stop> adapter = new BaseAdapter<Stop>(stops, R.layout.listview_item_basic, true, mContext);
+        mStopsListView.setAdapter(adapter);
+        mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-        public GTFSStopTask(Context context) {
-            this.mContext = context;
-        }
+                // Get tag from clicked view.
+                Stop stop = (Stop) view.getTag(R.id.tag_id_2);
 
-        @Override
-        protected List<Stop> doInBackground(Route... params) {
+                // Create new intent.
+                Intent intent = new Intent(mContext, StopTimesActivity.class);
 
-            Route route = params[0];
+                // Pass selected data.
+                intent.putExtra("stopData", stop);
 
-            List<Stop> stops = new ArrayList<Stop>();
-
-            String data = (new GTFSDataExchange("miway").getStopsData(route));
-
-            try {
-                stops = GTFSParser.getStops(data);
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                // Start the intent.
+                startActivity(intent);
             }
-
-            for (Stop stop : stops)
-                stop.setRoute(route);
-
-            return stops;
-        }
-
-        @Override
-        protected void onPostExecute(List<Stop> stops) {
-            super.onPostExecute(stops);
-
-            BaseAdapter<Stop> adapter = new BaseAdapter<Stop>(stops, R.layout.listview_item_basic, true, mContext);
-            mStopsListView.setAdapter(adapter);
-            mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    // Get tag from clicked view.
-                    Stop stop = (Stop) view.getTag(R.id.tag_id_2);
-
-                    // Create new intent.
-                    Intent intent = new Intent(mContext, StopTimesActivity.class);
-
-                    // Pass selected data.
-                    intent.putExtra("stopData", stop);
-
-                    // Start the intent.
-                    startActivity(intent);
-                }
-            });
-        }
+        });
     }
 }

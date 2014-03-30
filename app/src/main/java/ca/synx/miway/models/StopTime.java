@@ -11,21 +11,41 @@ import java.io.Serializable;
 import ca.synx.miway.interfaces.IListItem;
 
 public class StopTime implements IListItem, Serializable {
-    public String arrivalTime;
-    public String departureTime;
-    public Stop stop;
+    private String mArrivalTime;
+    private String mDepartureTime;
+    private Stop mStop;
 
     public StopTime(String arrivalTime, String departureTime) {
-        this.arrivalTime = arrivalTime;
-        this.departureTime = departureTime;
+        this.mArrivalTime = arrivalTime;
+        this.mDepartureTime = departureTime;
+    }
+
+    public String getArrivalTime() {
+        return this.mArrivalTime;
+    }
+
+    public void setArrivalTime(String arrivalTime) {
+        this.mArrivalTime = arrivalTime;
+    }
+
+    public String getDepartureTime() {
+        return this.mDepartureTime;
+    }
+
+    public void setDepartureTime(String departureTime) {
+        this.mDepartureTime = departureTime;
+    }
+
+    public Stop getStop() {
+        return this.mStop;
     }
 
     public void setStop(Stop stop) {
-        this.stop = stop;
+        this.mStop = stop;
     }
 
     public String getTitle() {
-        return this.departureTime;
+        return this.mDepartureTime;
     }
 
     public String getSubtitle() {

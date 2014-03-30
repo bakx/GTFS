@@ -16,8 +16,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
@@ -44,7 +42,7 @@ public class GTFSDataExchange {
             HttpResponse response = client.execute(new HttpGet(dataURL));
             InputStream is = response.getEntity().getContent();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf-8"), 8);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is), 8);
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
@@ -62,23 +60,19 @@ public class GTFSDataExchange {
 
     public String getRouteData() {
         return getData(
-                String.format(GTFS_BASE_URL + GET_ROUTES_URL, getServiceTimeStamp())
+                String.format(GTFS_BASE_URL + GET_ROUTES_URL, GTFS.getServiceTimeStamp())
         );
     }
 
     public String getStopsData(Route route) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOPS_URL, route.getRouteNumber(), route.getRouteHeading(), getServiceTimeStamp())
+                String.format(GTFS_BASE_URL + GET_STOPS_URL, route.getRouteNumber(), route.getRouteHeading(), GTFS.getServiceTimeStamp())
         );
     }
 
     public String getStopTimesData(Stop stop) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.getRoute().getRouteNumber(), stop.getRoute().getRouteHeading(), stop.getStopId(), getServiceTimeStamp())
+                String.format(GTFS_BASE_URL + GET_STOP_TIMES_URL, stop.getRoute().getRouteNumber(), stop.getRoute().getRouteHeading(), stop.getStopId(), GTFS.getServiceTimeStamp())
         );
-    }
-
-    private String getServiceTimeStamp() {
-        return new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
     }
 }

@@ -8,8 +8,8 @@ package ca.synx.miway.interfaces;
 
 import java.util.List;
 
-import ca.synx.miway.models.Route;
+import ca.synx.miway.models.Favorite;
 
-public interface IRouteTask {
-    void onRouteTaskComplete(List<Route> routes);
+public interface IFavoritesTask {
+    void onFavoritesTaskComplete(List<Favorite> favorites);
 }

@@ -10,11 +10,13 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import ca.synx.miway.models.Favorite;
+import ca.synx.miway.tables.CacheRoutesTable;
+import ca.synx.miway.tables.CacheStopTimesTable;
+import ca.synx.miway.tables.FavoriteTable;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
 
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
     public static final String DATABASE_NAME = "GTFS.db";
 
     public DatabaseHandler(Context context) {
@@ -22,17 +24,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(new Favorite().CREATE_SQL_ENTRIES());
+
+        db.execSQL(CacheRoutesTable.CREATE_SQL_ENTRIES());
+        db.execSQL(CacheStopTimesTable.CREATE_SQL_ENTRIES());
+        db.execSQL(FavoriteTable.CREATE_SQL_ENTRIES());
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL(new Favorite().DELETE_SQL_ENTRIES());
+
+        db.execSQL(CacheRoutesTable.DELETE_SQL_ENTRIES());
+        db.execSQL(CacheStopTimesTable.DELETE_SQL_ENTRIES());
+        db.execSQL(FavoriteTable.DELETE_SQL_ENTRIES());
+
         onCreate(db);
     }
 
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         onUpgrade(db, oldVersion, newVersion);
     }
-
-
 }

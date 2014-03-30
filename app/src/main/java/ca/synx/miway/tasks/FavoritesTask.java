@@ -11,7 +11,7 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.interfaces.IFavoriteTask;
+import ca.synx.miway.interfaces.IFavoritesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.FavoritesHandler;
@@ -19,9 +19,9 @@ import ca.synx.miway.util.FavoritesHandler;
 public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
 
     private DatabaseHandler mDatabaseHandler;
-    private IFavoriteTask mFavoriteListener;
+    private IFavoritesTask mFavoriteListener;
 
-    public FavoritesTask(DatabaseHandler databaseHandler, IFavoriteTask favoriteListener) {
+    public FavoritesTask(DatabaseHandler databaseHandler, IFavoritesTask favoriteListener) {
         this.mDatabaseHandler = databaseHandler;
         this.mFavoriteListener = favoriteListener;
     }
@@ -44,6 +44,6 @@ public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
     protected void onPostExecute(List<Favorite> favorites) {
         super.onPostExecute(favorites);
 
-        mFavoriteListener.onFavoriteTaskComplete(favorites);
+        mFavoriteListener.onFavoritesTaskComplete(favorites);
     }
 }

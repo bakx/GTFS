@@ -64,11 +64,11 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
         for (StopTime stopTime : stopTimes) {
             try {
-                stopTime.departureTime = newDateFormat.format(
-                        currentDateFormat.parse(stopTime.departureTime)
+                stopTime.setDepartureTime(
+                        newDateFormat.format(currentDateFormat.parse(stopTime.getDepartureTime()))
                 );
             } catch (Exception e) {
-                Log.v("StopTime Parse error", e.getMessage());
+                Log.e("StopTime Parse error", e.getMessage());
             }
         }
 
@@ -107,7 +107,7 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
             try {
 
                 Date stopDate = new SimpleDateFormat("hh:mm aa").parse(
-                        stopTime.departureTime
+                        stopTime.getDepartureTime()
                 );
 
                 long timeDifference = (stopDate.getTime() - currentDate.getTime()) / (60 * 1000);
@@ -116,7 +116,7 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                 if (timeDifference < 0)
                     continue;
 
-                stopTime.departureTime = stopTime.departureTime + " (" + String.valueOf(timeDifference) + " min)";
+                stopTime.setDepartureTime(stopTime.getDepartureTime() + " (" + String.valueOf(timeDifference) + " min)");
 
                 // Since time is already sorted on server, all objects that come after the
                 // time difference is 0, are valid. Keep adding them until we reach 'targetCount'

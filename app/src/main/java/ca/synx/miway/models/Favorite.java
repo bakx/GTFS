@@ -9,14 +9,12 @@ package ca.synx.miway.models;
 import java.io.Serializable;
 import java.util.List;
 
-import ca.synx.miway.interfaces.IDBItem;
 import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavorite;
 import ca.synx.miway.interfaces.IStopTimesTask;
-import ca.synx.miway.tables.FavoriteTable;
 import ca.synx.miway.tasks.StopTimesTask;
 
-public class Favorite implements IDBItem, Serializable, IFavorite, IStopTimesTask {
+public class Favorite implements Serializable, IFavorite, IStopTimesTask {
     private int mId;
     private Stop mStop;
     private List<StopTime> mNearestStopTimes;
@@ -76,22 +74,6 @@ public class Favorite implements IDBItem, Serializable, IFavorite, IStopTimesTas
         new StopTimesTask(3, this).execute(mStop);
     }
     /* </Implementation of interface IFavorite> */
-
-    public String CREATE_SQL_ENTRIES() {
-        return "CREATE TABLE " + FavoriteTable.TABLE_NAME + " (" +
-                FavoriteTable.COLUMN_FAVORITE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                FavoriteTable.COLUMN_STOP_ID + " TEXT," +
-                FavoriteTable.COLUMN_STOP_NAME + " TEXT," +
-                FavoriteTable.COLUMN_STOP_SEQUENCE + " INT," +
-                FavoriteTable.COLUMN_ROUTE_NUMBER + " TEXT," +
-                FavoriteTable.COLUMN_ROUTE_NAME + " TEXT," +
-                FavoriteTable.COLUMN_ROUTE_HEADING + " TEXT" +
-                ")";
-    }
-
-    public String DELETE_SQL_ENTRIES() {
-        return "DROP TABLE IF EXIST " + FavoriteTable.TABLE_NAME + ";";
-    }
 
     @Override
     public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {

@@ -11,25 +11,33 @@ import android.util.Log;
 
 import org.json.JSONException;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import ca.synx.miway.interfaces.IRouteTask;
+import ca.synx.miway.interfaces.IRoutesTask;
 import ca.synx.miway.models.Route;
+import ca.synx.miway.util.CacheHandler;
 import ca.synx.miway.util.GTFSDataExchange;
 import ca.synx.miway.util.GTFSParser;
 
 public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
 
-    private IRouteTask mListener;
+    private IRoutesTask mRouteTaskListener;
+    private CacheHandler mCacheHandler;
 
-    public RoutesTask(IRouteTask listener) {
-        this.mListener = listener;
+    public RoutesTask(IRoutesTask listener, CacheHandler cacheHandler) {
+        this.mRouteTaskListener = listener;
+        this.mCacheHandler = cacheHandler;
     }
 
     @Override
     protected List<Route> doInBackground(String... params) {
-        List<Route> routes = new ArrayList<Route>();
+        List<Route> routes = mCacheHandler.getRoutes();
+
+        // Check if items were found in cache.
+        if (routes.size() > 0)
+            return routes;
+
+        // Fetch data from web service.
         String data = (new GTFSDataExchange("miway").getRouteData());
 
         try {
@@ -39,6 +47,10 @@ public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
             Log.v("GTFSRouteTask->doInBackground", e.getMessage());
             e.printStackTrace();
         }
+
+        // Store items in cache.
+        mCacheHandler.saveRoutes(routes);
+
         return routes;
     }
 
@@ -46,6 +58,6 @@ public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
     protected void onPostExecute(List<Route> routes) {
         super.onPostExecute(routes);
 
-        mListener.onRouteTaskComplete(routes);
+        mRouteTaskListener.onRoutesTaskComplete(routes);
     }
 }
