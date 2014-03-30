@@ -26,21 +26,23 @@ import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
 import ca.synx.miway.tasks.StopTimesTask;
 import ca.synx.miway.util.DatabaseHandler;
-import ca.synx.miway.util.FavoritesHandler;
+import ca.synx.miway.util.StorageHandler;
 
 public class StopTimesActivity extends ActionBarActivity implements IStopTimesTask {
     static final String FAVORITE_DATA = "favoriteData";
     static final String STOP_DATA = "stopData";
 
+    private Context mContext;
+    private DatabaseHandler mDatabaseHandler;
+    private StorageHandler mStorageHandler;
+
     private Stop mStop;
     private Favorite mFavorite;
-    private Context mContext;
 
     private TextView mRouteName;
     private TextView mStopName;
     private ListView mNextStopTimesListView;
     private ListView mStopTimesListView;
-    private DatabaseHandler mDatabaseHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +65,7 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
         mContext = this;
         mDatabaseHandler = new DatabaseHandler(this);
+        mStorageHandler = new StorageHandler(mDatabaseHandler);
 
         // Set up class..
         mNextStopTimesListView = (ListView) findViewById(R.id.nextStopTimesListView);
@@ -76,15 +79,10 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
         // Check favorite..
         mFavorite = new Favorite(mStop);
-        new FavoritesHandler(mDatabaseHandler).isFavorite(mFavorite);
+        mStorageHandler.isFavorite(mFavorite);
 
         // Execute task.
-        new StopTimesTask(5, this).execute(mStop);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
+        new StopTimesTask(5, this, mStorageHandler).execute(mStop);
     }
 
     @Override
@@ -127,8 +125,7 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
         switch (item.getItemId()) {
             case R.id.action_add_favorite:
 
-                new FavoritesHandler(mDatabaseHandler)
-                        .saveFavorite(mFavorite);
+                mStorageHandler.saveFavorite(mFavorite);
 
                 handleFavorite();
 
@@ -137,8 +134,7 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
             case R.id.action_remove_favorite:
 
-                new FavoritesHandler(mDatabaseHandler)
-                        .removeFavorite(mFavorite);
+                mStorageHandler.removeFavorite(mFavorite);
 
                 handleFavorite();
 
@@ -155,6 +151,13 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
     @Override
     public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
+
+        // Check if any of the stop times object contain data.
+        if (nearestStopTimes == null || stopTimes == null) {
+            Toast.makeText(this, R.string.connection_error, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nearestStopTimes, R.layout.listview_item_single, false, mContext);
         mNextStopTimesListView.setAdapter(adapter);
 

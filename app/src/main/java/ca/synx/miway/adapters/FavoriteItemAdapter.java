@@ -16,8 +16,8 @@ import android.widget.TextView;
 import java.util.List;
 
 import ca.synx.miway.app.R;
-import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavorite;
+import ca.synx.miway.models.StopTime;
 
 public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter<Favorite> {
 
@@ -64,17 +64,32 @@ public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter
         holder.title.setText(favorite.getTitle());
         holder.subtitle.setText(favorite.getSubtitle());
 
-        if (null == favorite.getNearestStopTimes())
-            favorite.loadStopTimes((IDataUpdate) mContext);
-        else {
-            holder.stoptime1.setText(favorite.getNearestStopTimes().get(0).getTitle());
-            holder.stoptime2.setText(favorite.getNearestStopTimes().get(1).getTitle());
-            holder.stoptime3.setText(favorite.getNearestStopTimes().get(2).getTitle());
-        }
+        if (favorite.getNearestStopTimes() != null)
+            displayNearestStopTimes(holder, favorite.getNearestStopTimes());
 
         return v;
     }
 
+    private void displayNearestStopTimes(Holder holder, List<StopTime> nearestStopTimes) {
+
+        if (nearestStopTimes.size() == 0) {
+            holder.stoptime1.setText(R.string.no_stop_times_scheduled);
+            holder.stoptime2.setText("");
+            holder.stoptime3.setText("");
+        } else if (nearestStopTimes.size() == 1) {
+            holder.stoptime1.setText(nearestStopTimes.get(0).getTitle());
+            holder.stoptime2.setText("");
+            holder.stoptime3.setText("");
+        } else if (nearestStopTimes.size() == 2) {
+            holder.stoptime1.setText(nearestStopTimes.get(0).getTitle());
+            holder.stoptime2.setText("");
+            holder.stoptime3.setText(nearestStopTimes.get(1).getTitle());
+        } else {
+            holder.stoptime1.setText(nearestStopTimes.get(0).getTitle());
+            holder.stoptime2.setText(nearestStopTimes.get(1).getTitle());
+            holder.stoptime3.setText(nearestStopTimes.get(2).getTitle());
+        }
+    }
 
     private static class Holder {
         public TextView title;

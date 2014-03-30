@@ -22,15 +22,18 @@ import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
 import ca.synx.miway.util.GTFSDataExchange;
 import ca.synx.miway.util.GTFSParser;
+import ca.synx.miway.util.StorageHandler;
 
 public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
     private int mNextStopTimesCount;
     private IStopTimesTask mListener;
+    private StorageHandler mStorageHandler;
 
-    public StopTimesTask(int nextStopTimesCount, IStopTimesTask listener) {
+    public StopTimesTask(int nextStopTimesCount, IStopTimesTask listener, StorageHandler storageHandler) {
         this.mNextStopTimesCount = nextStopTimesCount;
         this.mListener = listener;
+        this.mStorageHandler = storageHandler;
     }
 
     @Override
@@ -38,19 +41,30 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
         Stop stop = params[0];
 
-        List<StopTime> stopTimes = new ArrayList<StopTime>();
+        List<StopTime> stopTimes = mStorageHandler.getStopTimes(stop);
+
+        // Check if items were found in cache.
+        if (stopTimes.size() > 0)
+            return stopTimes;
 
         String data = (new GTFSDataExchange("miway").getStopTimesData(stop));
+
+        if (data == null)
+            return null;
 
         try {
             stopTimes = GTFSParser.getStopTimes(data);
 
         } catch (JSONException e) {
+            Log.e("StopTimesTask:doInBackground", e.getMessage());
             e.printStackTrace();
         }
 
         for (StopTime stopTime : stopTimes)
             stopTime.setStop(stop);
+
+        // Store items in cache.
+        mStorageHandler.saveStopTimes(stopTimes);
 
         return stopTimes;
     }
@@ -116,11 +130,14 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                 if (timeDifference < 0)
                     continue;
 
-                stopTime.setDepartureTime(stopTime.getDepartureTime() + " (" + String.valueOf(timeDifference) + " min)");
+                StopTime nearStopTime = new StopTime(
+                        stopTime.getArrivalTime(),
+                        stopTime.getDepartureTime() + " (" + String.valueOf(timeDifference) + " min)"
+                );
 
                 // Since time is already sorted on server, all objects that come after the
                 // time difference is 0, are valid. Keep adding them until we reach 'targetCount'
-                nearestStopTimes.add(stopTime);
+                nearestStopTimes.add(nearStopTime);
             } catch (Exception e) {
                 Log.e("getNearestStopTimes departureTime parsing error", e.getMessage());
             }

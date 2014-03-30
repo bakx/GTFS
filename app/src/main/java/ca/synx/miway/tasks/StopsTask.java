@@ -7,6 +7,7 @@
 package ca.synx.miway.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -18,13 +19,16 @@ import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.util.GTFSDataExchange;
 import ca.synx.miway.util.GTFSParser;
+import ca.synx.miway.util.StorageHandler;
 
 public class StopsTask extends AsyncTask<Route, Void, List<Stop>> {
 
     private IStopsTask mStopsTaskListener;
+    private StorageHandler mStorageHandler;
 
-    public StopsTask(IStopsTask stopsTaskListener) {
+    public StopsTask(IStopsTask stopsTaskListener, StorageHandler storageHandler) {
         this.mStopsTaskListener = stopsTaskListener;
+        this.mStorageHandler = storageHandler;
     }
 
     @Override
@@ -36,10 +40,14 @@ public class StopsTask extends AsyncTask<Route, Void, List<Stop>> {
 
         String data = (new GTFSDataExchange("miway").getStopsData(route));
 
+        if (data == null)
+            return null;
+
         try {
             stops = GTFSParser.getStops(data);
 
         } catch (JSONException e) {
+            Log.e("StopsTask:doInBackground", e.getMessage());
             e.printStackTrace();
         }
 

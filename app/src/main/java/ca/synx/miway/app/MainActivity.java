@@ -16,11 +16,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import java.util.List;
 
 import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
+import ca.synx.miway.helpers.FavoriteHelper;
 import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavoritesTask;
 import ca.synx.miway.interfaces.IRoutesTask;
@@ -28,18 +30,17 @@ import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.tasks.FavoritesTask;
 import ca.synx.miway.tasks.RoutesTask;
-import ca.synx.miway.util.CacheHandler;
 import ca.synx.miway.util.DatabaseHandler;
+import ca.synx.miway.util.StorageHandler;
 
 public class MainActivity extends Activity implements IFavoritesTask, IRoutesTask, IDataUpdate {
 
     private Context mContext;
+    private DatabaseHandler mDatabaseHandler;
+    private StorageHandler mStorageHandler;
 
     private FavoriteItemAdapter<Favorite> mFavoritesAdapter;
     private BaseAdapter<Route> mRoutesAdapter;
-
-    private DatabaseHandler mDatabaseHandler;
-    private CacheHandler mCacheHandler;
 
     private TabHost mTabHost;
     private ListView mFavoritesListView;
@@ -52,7 +53,7 @@ public class MainActivity extends Activity implements IFavoritesTask, IRoutesTas
 
         mContext = this;
         mDatabaseHandler = new DatabaseHandler(this);
-        mCacheHandler = new CacheHandler(mDatabaseHandler);
+        mStorageHandler = new StorageHandler(mDatabaseHandler);
 
         // Init tabs
         initializeTabs();
@@ -98,7 +99,7 @@ public class MainActivity extends Activity implements IFavoritesTask, IRoutesTas
         new FavoritesTask(mDatabaseHandler, this).execute();
 
         // Fetch Routes from online web service.
-        new RoutesTask(this, mCacheHandler).execute();
+        new RoutesTask(this, mStorageHandler).execute();
     }
 
     @Override
@@ -121,10 +122,22 @@ public class MainActivity extends Activity implements IFavoritesTask, IRoutesTas
                 startActivity(intent);
             }
         });
+
+        // Get the stop times for all favorites.
+        for (Favorite favorite : favorites) {
+            new FavoriteHelper(this, favorite, mStorageHandler).loadStopTimes();
+        }
     }
 
     @Override
     public void onRoutesTaskComplete(List<Route> routes) {
+
+        // Check if routes object contains data.
+        if (routes == null) {
+            Toast.makeText(this, R.string.connection_error, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         mRoutesAdapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
         mRoutesListView.setAdapter(mRoutesAdapter);
         mRoutesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

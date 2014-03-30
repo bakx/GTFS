@@ -12,7 +12,4 @@ import ca.synx.miway.models.StopTime;
 
 public interface IFavorite extends IListItem {
     public List<StopTime> getNearestStopTimes();
-
-    public void loadStopTimes(IDataUpdate dataUpdate);
-
 }

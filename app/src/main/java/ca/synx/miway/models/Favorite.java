@@ -9,20 +9,17 @@ package ca.synx.miway.models;
 import java.io.Serializable;
 import java.util.List;
 
-import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavorite;
-import ca.synx.miway.interfaces.IStopTimesTask;
-import ca.synx.miway.tasks.StopTimesTask;
+import ca.synx.miway.util.StorageHandler;
 
-public class Favorite implements Serializable, IFavorite, IStopTimesTask {
+public class Favorite implements Serializable, IFavorite {
+
     private int mId;
     private Stop mStop;
     private List<StopTime> mNearestStopTimes;
     private List<StopTime> mStopTimes;
-    private IDataUpdate mDataUpdateListener;
 
-    public Favorite() {
-    }
+    private StorageHandler mStorageHandler;
 
     public Favorite(Stop stop) {
         this.mStop = stop;
@@ -69,16 +66,6 @@ public class Favorite implements Serializable, IFavorite, IStopTimesTask {
         return mNearestStopTimes;
     }
 
-    public void loadStopTimes(IDataUpdate dataUpdate) {
-        this.mDataUpdateListener = dataUpdate;
-        new StopTimesTask(3, this).execute(mStop);
-    }
     /* </Implementation of interface IFavorite> */
-
-    @Override
-    public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
-        setStopTimes(nearestStopTimes, stopTimes);
-        mDataUpdateListener.onDataUpdate();
-    }
 }
 

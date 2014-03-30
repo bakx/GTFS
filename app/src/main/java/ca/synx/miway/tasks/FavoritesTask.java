@@ -7,6 +7,7 @@
 package ca.synx.miway.tasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import java.util.List;
 import ca.synx.miway.interfaces.IFavoritesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.util.DatabaseHandler;
-import ca.synx.miway.util.FavoritesHandler;
+import ca.synx.miway.util.StorageHandler;
 
 public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
 
@@ -32,8 +33,9 @@ public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
         List<Favorite> favorites = new ArrayList<Favorite>();
 
         try {
-            favorites = new FavoritesHandler(mDatabaseHandler).getFavorites();
+            favorites = new StorageHandler(mDatabaseHandler).getFavorites();
         } catch (Exception e) {
+            Log.e("FavoritesTask:doInBackground", e.getMessage());
             e.printStackTrace();
         }
 

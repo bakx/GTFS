@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -21,14 +22,17 @@ import ca.synx.miway.interfaces.IStopsTask;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.tasks.StopsTask;
+import ca.synx.miway.util.DatabaseHandler;
+import ca.synx.miway.util.StorageHandler;
 
 public class StopsActivity extends Activity implements IStopsTask {
 
     static final String ROUTE_DATA = "routeData";
-
-    Context mContext;
     Route mRoute;
     ListView mStopsListView;
+    private Context mContext;
+    private DatabaseHandler mDatabaseHandler;
+    private StorageHandler mStorageHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +64,7 @@ public class StopsActivity extends Activity implements IStopsTask {
         setTitle(String.format(getTitle().toString(), mRoute.getTitle(), mRoute.getSubtitle()));
 
         // Execute task.
-        new StopsTask(this).execute(mRoute);
+        new StopsTask(this, mStorageHandler).execute(mRoute);
     }
 
     @Override
@@ -83,6 +87,13 @@ public class StopsActivity extends Activity implements IStopsTask {
 
     @Override
     public void onStopsTaskComplete(List<Stop> stops) {
+
+        // Check if stops object contain data.
+        if (stops == null) {
+            Toast.makeText(this, R.string.connection_error, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         BaseAdapter<Stop> adapter = new BaseAdapter<Stop>(stops, R.layout.listview_item_basic, true, mContext);
         mStopsListView.setAdapter(adapter);
         mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

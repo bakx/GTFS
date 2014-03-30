@@ -35,7 +35,6 @@ public class GTFSDataExchange {
     private String getData(String dataURL) {
 
         HttpClient client;
-        String result;
 
         try {
             client = new DefaultHttpClient();
@@ -46,16 +45,15 @@ public class GTFSDataExchange {
             StringBuilder sb = new StringBuilder();
             String line;
             while ((line = reader.readLine()) != null) {
-                sb.append(line);
+                sb.append(line + '\n');
             }
             is.close();
-            result = sb.toString();
+
+            return sb.toString();
         } catch (Exception e) {
             Log.v("GTFSDataExchange.getData threw error", e.getMessage());
-            return "";
+            return null;
         }
-
-        return result;
     }
 
     public String getRouteData() {
