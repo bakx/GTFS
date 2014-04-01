@@ -82,7 +82,8 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                         newDateFormat.format(currentDateFormat.parse(stopTime.getDepartureTime()))
                 );
             } catch (Exception e) {
-                Log.e("StopTime Parse error", e.getMessage());
+                Log.e("StopTimesTask:onPostExecute", e.getMessage());
+                e.printStackTrace();
             }
         }
 
@@ -108,7 +109,9 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                     )
             );
         } catch (Exception e) {
-            Log.e("getNearestStopTimes currentDate error", e.getMessage());
+            Log.e("StopTimesTask:getNearestStopTimes", e.getMessage());
+            e.printStackTrace();
+
             return nearestStopTimes;
         }
 
@@ -149,7 +152,8 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                 // time difference is 0, are valid. Keep adding them until we reach 'targetCount'
                 nearestStopTimes.add(nearStopTime);
             } catch (Exception e) {
-                Log.e("getNearestStopTimes departureTime parsing error", e.getMessage());
+                Log.e("StopTimesTask:getNearestStopTimes (departureTime parsing)", e.getMessage());
+                e.printStackTrace();
             }
 
             if (nearestStopTimes.size() >= targetCount)

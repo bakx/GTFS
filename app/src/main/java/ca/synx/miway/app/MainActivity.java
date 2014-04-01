@@ -6,11 +6,12 @@
 
 package ca.synx.miway.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -33,7 +34,7 @@ import ca.synx.miway.tasks.RoutesTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class MainActivity extends Activity implements IFavoritesTask, IRoutesTask, IDataUpdate {
+public class MainActivity extends ActionBarActivity implements IFavoritesTask, IRoutesTask, IDataUpdate {
 
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
@@ -75,15 +76,25 @@ public class MainActivity extends Activity implements IFavoritesTask, IRoutesTas
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
 
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+
+                mFavoritesAdapter.notifyDataSetChanged();
+                Toast.makeText(this, R.string.refreshing_favorites, Toast.LENGTH_SHORT).show();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     // Load Tabs

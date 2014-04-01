@@ -66,7 +66,8 @@ public final class StorageHandler {
 
             return list;
         } catch (Exception e) {
-            Log.e("getRoutes", e.getMessage());
+            Log.e("StorageHandler:getRoutes", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -89,7 +90,8 @@ public final class StorageHandler {
                 db.insert(CacheRoutesTable.TABLE_NAME, null, values);
             }
         } catch (Exception e) {
-            Log.e("saveRoutes", e.getMessage());
+            Log.e("StorageHandler:saveRoutes", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -137,7 +139,8 @@ public final class StorageHandler {
 
             return list;
         } catch (Exception e) {
-            Log.e("getStopTimes", e.getMessage());
+            Log.e("StorageHandler:getStopTimes", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -165,7 +168,8 @@ public final class StorageHandler {
                 db.insert(CacheStopTimesTable.TABLE_NAME, null, values);
             }
         } catch (Exception e) {
-            Log.e("saveStopTimes", e.getMessage());
+            Log.e("StorageHandler:saveStopTimes", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -177,7 +181,7 @@ public final class StorageHandler {
         SQLiteDatabase db = this.mDatabaseHandler.getReadableDatabase();
 
         try {
-            Cursor cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME, null);
+            Cursor cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_ROUTE_NUMBER, null);
 
             if (cursor.moveToFirst()) {
 
@@ -207,7 +211,8 @@ public final class StorageHandler {
                 }
             }
         } catch (Exception e) {
-            Log.e("getFavorites", e.getMessage());
+            Log.e("StorageHandler:getFavorites", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -231,7 +236,8 @@ public final class StorageHandler {
             long insertId = db.insert(FavoriteTable.TABLE_NAME, null, values);
             favorite.setId((int) insertId);
         } catch (Exception e) {
-            Log.e("saveFavorite", e.getMessage());
+            Log.e("StorageHandler:saveFavorite", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -245,7 +251,8 @@ public final class StorageHandler {
             db.delete(FavoriteTable.TABLE_NAME, FavoriteTable.COLUMN_FAVORITE_ID + "=" + favorite.getId(), null);
             favorite.setId(0);
         } catch (Exception e) {
-            Log.e("removeFavorite", e.getMessage());
+            Log.e("StorageHandler:removeFavorite", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
@@ -285,7 +292,8 @@ public final class StorageHandler {
                 return true;
             }
         } catch (Exception e) {
-            Log.e("isFavorite", e.getMessage());
+            Log.e("StorageHandler:isFavorite", e.getMessage());
+            e.printStackTrace();
         } finally {
             db.close();
         }
