@@ -44,8 +44,8 @@ public class NextStopTimesTask extends AsyncTask<List<StopTime>, Void, List<Stop
         long currentTime = 0;
 
         try {
-            currentTime = new SimpleDateFormat("HH:mm").parse(
-                    new SimpleDateFormat("HH:mm").format(
+            currentTime = new SimpleDateFormat("hh:mm a").parse(
+                    new SimpleDateFormat("hh:mm a").format(
                             Calendar.getInstance().getTime()
                     )
             ).getTime();
@@ -69,7 +69,7 @@ public class NextStopTimesTask extends AsyncTask<List<StopTime>, Void, List<Stop
             try {
                 StopTime stopTime = stopTimes.get(i);
 
-                Date stopDate = new SimpleDateFormat("HH:mm").parse(
+                Date stopDate = new SimpleDateFormat("hh:mm a").parse(
                         stopTime.getDepartureTime()
                 );
 

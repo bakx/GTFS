@@ -6,14 +6,19 @@
 
 package ca.synx.miway.app;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -33,16 +38,34 @@ public class MapActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        // Get a handle to the Map Fragment
-        GoogleMap map = ((MapFragment) getFragmentManager()
-                .findFragmentById(R.id.mapview)).getMap();
+        // Check if the Google Play Service is available. This is required for Maps v2 to work.
+        if (GooglePlayServicesUtil.isGooglePlayServicesAvailable(this) != ConnectionResult.SUCCESS) {
+            AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+            alertDialogBuilder.setTitle(getString(R.string.sorry));
+            alertDialogBuilder.setMessage(getString(R.string.map_not_available));
+            alertDialogBuilder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    //finish();
+                }
+            });
+
+            AlertDialog alertDialog = alertDialogBuilder.create();
+            alertDialog.show();
+            return;
+        }
+
+        GoogleMap map = ((SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map))
+                .getMap();
 
         LatLng sydney = new LatLng(-33.867, 151.206);
 
         map.setMyLocationEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 13));
 
+
         map.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_bus_logo_blue))
                 .title("Sydney")
                 .snippet("The most populous city in Australia.")
                 .position(sydney));

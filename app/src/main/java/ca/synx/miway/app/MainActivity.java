@@ -96,10 +96,25 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+            case R.id.action_map:
+
+                // Create new intent.
+                Intent intent = new Intent(mContext, MapActivity.class);
+
+                // Start the intent.
+                startActivity(intent);
+                return true;
+
             case R.id.action_refresh:
 
-                mFavoritesAdapter.notifyDataSetChanged();
-                Toast.makeText(this, R.string.refreshing_favorites, Toast.LENGTH_SHORT).show();
+                // Display loading dialog.
+                mProgressDialog = new ProgressDialog(this);
+                mProgressDialog.setTitle(getString(R.string.title_please_wait));
+                mProgressDialog.setMessage(getString(R.string.loading_stop_times));
+                mProgressDialog.show();
+
+                // Prepare favorites.
+                new FavoritesTask(mDatabaseHandler, this).execute();
                 return true;
 
             default:
@@ -183,12 +198,17 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
             }
         });
 
-        // This function is called latest. Once this is complete, the process loading dialog can be dismissed.
-        mProgressDialog.dismiss();
+        // Dismiss the progress dialog (if any)
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 
     @Override
     public void onDataUpdate() {
         mFavoritesAdapter.notifyDataSetChanged();
+
+        // Dismiss the progress dialog (if any)
+        if (mProgressDialog != null && mProgressDialog.isShowing())
+            mProgressDialog.dismiss();
     }
 }

@@ -20,7 +20,7 @@
     <string name="added_favorites">Added to Favorites</string>
     <string name="removed_favorites">Removed from Favorites</string>
     <string name="refresh">Refresh</string>
-    <string name="refreshing_favorites">Refreshing favorites</string>
+    <string name="map">Map</string>
 
     <!-- Titles -->
     <string name="stops">Stops (%1$s - %2$s)</string>
@@ -37,6 +37,10 @@
     <string name="loading_routes">Loading Routes</string>
     <string name="loading_stop_times">Loading Stop Times</string>
     <string name="loading_stops">Loading Stops</string>
+    <string name="sorry">Sorry</string>
+    <string name="map_not_available">Map is not available on this device.</string>
+    <string name="ok">OK</string>
+
 
     <item name="tag_id_1" type="id"></item>
     <item name="tag_id_2" type="id"></item>
