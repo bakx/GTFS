@@ -6,34 +6,46 @@
 
 package ca.synx.miway.helpers;
 
+import android.content.Context;
+
 import java.util.List;
 
 import ca.synx.miway.interfaces.IDataUpdate;
+import ca.synx.miway.interfaces.INextStopTimesTask;
 import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.StopTime;
+import ca.synx.miway.tasks.NextStopTimesTask;
 import ca.synx.miway.tasks.StopTimesTask;
 import ca.synx.miway.util.StorageHandler;
 
-public class FavoriteHelper implements IStopTimesTask {
+public class FavoriteHelper implements IStopTimesTask, INextStopTimesTask {
 
+    private Context mContext;
     private Favorite mFavorite;
     private IDataUpdate mDataUpdateListener;
     private StorageHandler mStorageHandler;
 
-    public FavoriteHelper(IDataUpdate dataUpdateListener, Favorite favorite, StorageHandler storageHandler) {
+    public FavoriteHelper(Context context, IDataUpdate dataUpdateListener, StorageHandler storageHandler, Favorite favorite) {
+        this.mContext = context;
         this.mDataUpdateListener = dataUpdateListener;
         this.mFavorite = favorite;
         this.mStorageHandler = storageHandler;
     }
 
     public void loadStopTimes() {
-        new StopTimesTask(3, this, mStorageHandler).execute(mFavorite.getStop());
+        new StopTimesTask(mContext, this, mStorageHandler).execute(mFavorite.getStop());
     }
 
     @Override
-    public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
-        mFavorite.setStopTimes(nearestStopTimes, stopTimes);
+    public void onStopTimesTaskComplete(List<StopTime> stopTimes) {
+        mFavorite.setStopTimes(stopTimes);
+        new NextStopTimesTask(mContext, this, 3).execute(stopTimes);
+    }
+
+    @Override
+    public void onNextStopTimesTaskComplete(List<StopTime> nextStopTimes) {
+        mFavorite.setNextStopTimes(nextStopTimes);
         mDataUpdateListener.onDataUpdate();
     }
 }

@@ -6,6 +6,7 @@
 
 package ca.synx.miway.app;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,15 +22,17 @@ import android.widget.Toast;
 import java.util.List;
 
 import ca.synx.miway.adapters.SingleItemAdapter;
+import ca.synx.miway.interfaces.INextStopTimesTask;
 import ca.synx.miway.interfaces.IStopTimesTask;
 import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
+import ca.synx.miway.tasks.NextStopTimesTask;
 import ca.synx.miway.tasks.StopTimesTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class StopTimesActivity extends ActionBarActivity implements IStopTimesTask {
+public class StopTimesActivity extends ActionBarActivity implements IStopTimesTask, INextStopTimesTask {
     static final String FAVORITE_DATA = "favoriteData";
     static final String STOP_DATA = "stopData";
 
@@ -42,7 +46,9 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
     private TextView mRouteName;
     private TextView mStopName;
     private ListView mNextStopTimesListView;
-    private ListView mStopTimesListView;
+    private GridView mStopTimesGridView;
+
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +73,15 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
         mDatabaseHandler = new DatabaseHandler(this);
         mStorageHandler = new StorageHandler(mDatabaseHandler);
 
+        // Display loading dialog.
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.title_please_wait));
+        mProgressDialog.setMessage(getString(R.string.loading_stop_times));
+        mProgressDialog.show();
+
         // Set up class..
         mNextStopTimesListView = (ListView) findViewById(R.id.nextStopTimesListView);
-        mStopTimesListView = (ListView) findViewById(R.id.stopTimesListView);
+        mStopTimesGridView = (GridView) findViewById(R.id.stopTimesGridView);
 
         mRouteName = (TextView) findViewById(R.id.routeName);
         mStopName = (TextView) findViewById(R.id.stopName);
@@ -82,7 +94,11 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
         mStorageHandler.isFavorite(mFavorite);
 
         // Execute task.
-        new StopTimesTask(5, this, mStorageHandler).execute(mStop);
+        new StopTimesTask(mContext, this, mStorageHandler).execute(mStop);
+
+
+// To dismiss the dialog
+
     }
 
     @Override
@@ -150,19 +166,28 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
     }
 
     @Override
-    public void onStopTimesTaskComplete(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
+    public void onStopTimesTaskComplete(List<StopTime> stopTimes) {
 
         // Check if any of the stop times object contain data.
-        if (nearestStopTimes == null || stopTimes == null) {
+        if (stopTimes == null) {
             Toast.makeText(this, R.string.connection_error, Toast.LENGTH_LONG).show();
             return;
         }
 
-        SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nearestStopTimes, R.layout.listview_item_single, false, mContext);
-        mNextStopTimesListView.setAdapter(adapter);
+        // Set adapter that loads the list view.
+        SingleItemAdapter adapter = new SingleItemAdapter<StopTime>(stopTimes, R.layout.listview_item_single, false, mContext);
+        mStopTimesGridView.setAdapter(adapter);
 
-        adapter = new SingleItemAdapter<StopTime>(stopTimes, R.layout.listview_item_single, false, mContext);
-        mStopTimesListView.setAdapter(adapter);
+        // Execute another ASyncTask that calculates the next stop times.
+        new NextStopTimesTask(mContext, this, 5).execute(stopTimes);
     }
 
+    @Override
+    public void onNextStopTimesTaskComplete(List<StopTime> nextStopTimes) {
+        SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nextStopTimes, R.layout.listview_item_single, false, mContext);
+        mNextStopTimesListView.setAdapter(adapter);
+
+        // This function is called latest. Once this is complete, the process loading dialog can be dismissed.
+        mProgressDialog.dismiss();
+    }
 }

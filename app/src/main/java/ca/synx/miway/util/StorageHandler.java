@@ -24,7 +24,7 @@ import ca.synx.miway.tables.FavoriteTable;
 
 public final class StorageHandler {
 
-    private static DatabaseHandler mDatabaseHandler;
+    private DatabaseHandler mDatabaseHandler;
 
     public StorageHandler(DatabaseHandler databaseHandler) {
         this.mDatabaseHandler = databaseHandler;
@@ -35,9 +35,10 @@ public final class StorageHandler {
         List<Route> list = new ArrayList<Route>();
 
         SQLiteDatabase db = mDatabaseHandler.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
-            Cursor cursor = db.query(CacheRoutesTable.TABLE_NAME,
+            cursor = db.query(CacheRoutesTable.TABLE_NAME,
                     new String[]{
                             CacheRoutesTable.COLUMN_ROUTE_NUMBER,
                             CacheRoutesTable.COLUMN_ROUTE_NAME,
@@ -64,11 +65,12 @@ public final class StorageHandler {
                 }
             }
 
-            return list;
         } catch (Exception e) {
             Log.e("StorageHandler:getRoutes", e.getMessage());
             e.printStackTrace();
         } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
             db.close();
         }
 
@@ -102,9 +104,10 @@ public final class StorageHandler {
         List<StopTime> list = new ArrayList<StopTime>();
 
         SQLiteDatabase db = mDatabaseHandler.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
-            Cursor cursor = db.query(CacheStopTimesTable.TABLE_NAME,
+            cursor = db.query(CacheStopTimesTable.TABLE_NAME,
                     new String[]{
                             CacheStopTimesTable.COLUMN_ARRIVAL_TIME,
                             CacheStopTimesTable.COLUMN_DEPARTURE_TIME
@@ -137,11 +140,13 @@ public final class StorageHandler {
                 }
             }
 
-            return list;
         } catch (Exception e) {
             Log.e("StorageHandler:getStopTimes", e.getMessage());
             e.printStackTrace();
         } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+
             db.close();
         }
 
@@ -179,9 +184,10 @@ public final class StorageHandler {
 
         List<Favorite> list = new ArrayList<Favorite>();
         SQLiteDatabase db = this.mDatabaseHandler.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
-            Cursor cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_ROUTE_NUMBER, null);
+            cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_ROUTE_NUMBER, null);
 
             if (cursor.moveToFirst()) {
 
@@ -214,6 +220,8 @@ public final class StorageHandler {
             Log.e("StorageHandler:getFavorites", e.getMessage());
             e.printStackTrace();
         } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
             db.close();
         }
 
@@ -261,6 +269,7 @@ public final class StorageHandler {
     public Boolean isFavorite(Favorite favorite) {
 
         SQLiteDatabase db = this.mDatabaseHandler.getReadableDatabase();
+        Cursor cursor = null;
 
         try {
             ContentValues values = new ContentValues();
@@ -271,7 +280,7 @@ public final class StorageHandler {
             values.put(FavoriteTable.COLUMN_ROUTE_NAME, favorite.getStop().getRoute().getRouteName());
             values.put(FavoriteTable.COLUMN_ROUTE_HEADING, favorite.getStop().getRoute().getRouteHeading());
 
-            Cursor cursor = db.query(FavoriteTable.TABLE_NAME,
+            cursor = db.query(FavoriteTable.TABLE_NAME,
                     new String[]{FavoriteTable.COLUMN_FAVORITE_ID},
                     FavoriteTable.COLUMN_STOP_ID + " = ? " +
                             "AND " + FavoriteTable.COLUMN_STOP_NAME + " = ? " +
@@ -295,11 +304,11 @@ public final class StorageHandler {
             Log.e("StorageHandler:isFavorite", e.getMessage());
             e.printStackTrace();
         } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
             db.close();
         }
 
         return false;
     }
-
-
 }

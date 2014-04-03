@@ -20,8 +20,8 @@ import ca.synx.miway.interfaces.IListItem;
 
 public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
 
-    public SingleItemAdapter(List<T> list, int listViewResourceID, boolean showNextIcon, Context ctx) {
-        super(list, listViewResourceID, showNextIcon, ctx);
+    public SingleItemAdapter(List<T> list, int resourceId, boolean showNextIcon, Context context) {
+        super(list, resourceId, showNextIcon, context);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.listview_item_single, null);
 
-            if (!showNextIcon) {
+            if (!mShowNextIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
                 imageView.setVisibility(View.GONE);
             }

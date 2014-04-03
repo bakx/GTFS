@@ -6,15 +6,13 @@
 
 package ca.synx.miway.tasks;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import ca.synx.miway.interfaces.IStopTimesTask;
@@ -26,12 +24,12 @@ import ca.synx.miway.util.StorageHandler;
 
 public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
 
-    private int mNextStopTimesCount;
+    private Context mContext;
     private IStopTimesTask mListener;
     private StorageHandler mStorageHandler;
 
-    public StopTimesTask(int nextStopTimesCount, IStopTimesTask listener, StorageHandler storageHandler) {
-        this.mNextStopTimesCount = nextStopTimesCount;
+    public StopTimesTask(Context context, IStopTimesTask listener, StorageHandler storageHandler) {
+        this.mContext = context;
         this.mListener = listener;
         this.mStorageHandler = storageHandler;
     }
@@ -79,7 +77,10 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
         for (StopTime stopTime : stopTimes) {
             try {
                 stopTime.setDepartureTime(
-                        newDateFormat.format(currentDateFormat.parse(stopTime.getDepartureTime()))
+                        newDateFormat.format(
+                                currentDateFormat.parse(stopTime.getDepartureTime()
+                                )
+                        )
                 );
             } catch (Exception e) {
                 Log.e("StopTimesTask:onPostExecute", e.getMessage());
@@ -87,79 +88,6 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
             }
         }
 
-        mListener.onStopTimesTaskComplete(
-                getNearestStopTimes(stopTimes, mNextStopTimesCount),
-                stopTimes
-        );
-    }
-
-    protected List<StopTime> getNearestStopTimes(List<StopTime> source, int targetCount) {
-        List<StopTime> nearestStopTimes = new ArrayList<StopTime>();
-
-        Date currentDate;
-
-        //
-        // Get current time stamp as date
-        //
-
-        try {
-            currentDate = new SimpleDateFormat("hh:mm aa").parse(
-                    new SimpleDateFormat("hh:mm aa").format(
-                            Calendar.getInstance().getTime()
-                    )
-            );
-        } catch (Exception e) {
-            Log.e("StopTimesTask:getNearestStopTimes", e.getMessage());
-            e.printStackTrace();
-
-            return nearestStopTimes;
-        }
-
-        //
-        // Loop through all departure times to find best match
-        //
-
-        boolean foundMatch = false;
-
-        for (StopTime stopTime : source) {
-
-            try {
-
-                Date stopDate = new SimpleDateFormat("hh:mm aa").parse(
-                        stopTime.getDepartureTime()
-                );
-
-                long timeDifference = (stopDate.getTime() - currentDate.getTime()) / (60 * 1000);
-
-                // Match not found, vehicle has left. Skip item.
-                if (timeDifference < 0 && !foundMatch)
-                    continue;
-                else if (foundMatch && timeDifference < 0)
-                    // If the current time is
-                    // prior to midnight, anything after midnight would render a time difference smaller than 0 after
-                    // a match is found. To solve this problem we add minutes equivalent to 1 day (24 * 60).
-                    timeDifference = timeDifference + (24 * 60);
-
-                // Change flag of 'foundMatch' to support stop times after midnight.
-                foundMatch = true;
-
-                StopTime nearStopTime = new StopTime(
-                        stopTime.getArrivalTime(),
-                        stopTime.getDepartureTime() + " (" + String.valueOf(timeDifference) + " min)"
-                );
-
-                // Since time is already sorted on server, all objects that come after the
-                // time difference is 0, are valid. Keep adding them until we reach 'targetCount'
-                nearestStopTimes.add(nearStopTime);
-            } catch (Exception e) {
-                Log.e("StopTimesTask:getNearestStopTimes (departureTime parsing)", e.getMessage());
-                e.printStackTrace();
-            }
-
-            if (nearestStopTimes.size() >= targetCount)
-                break;
-        }
-
-        return nearestStopTimes;
+        mListener.onStopTimesTaskComplete(stopTimes);
     }
 }

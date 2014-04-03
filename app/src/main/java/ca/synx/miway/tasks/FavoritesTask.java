@@ -20,11 +20,11 @@ import ca.synx.miway.util.StorageHandler;
 public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
 
     private DatabaseHandler mDatabaseHandler;
-    private IFavoritesTask mFavoriteListener;
+    private IFavoritesTask mListener;
 
     public FavoritesTask(DatabaseHandler databaseHandler, IFavoritesTask favoriteListener) {
         this.mDatabaseHandler = databaseHandler;
-        this.mFavoriteListener = favoriteListener;
+        this.mListener = favoriteListener;
     }
 
     @Override
@@ -46,6 +46,6 @@ public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
     protected void onPostExecute(List<Favorite> favorites) {
         super.onPostExecute(favorites);
 
-        mFavoriteListener.onFavoritesTaskComplete(favorites);
+        mListener.onFavoritesTaskComplete(favorites);
     }
 }

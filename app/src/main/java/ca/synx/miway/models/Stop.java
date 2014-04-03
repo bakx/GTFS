@@ -11,48 +11,48 @@ import java.io.Serializable;
 import ca.synx.miway.interfaces.IListItem;
 
 public class Stop implements IListItem, Serializable {
-    private String stopId;
-    private String stopName;
-    private int stopSequence;
-    private Route route;
+    private String mStopId;
+    private String mStopName;
+    private int mStopSequence;
+    private Route mRoute;
 
     public Stop(String stopId, String stopName, int stopSequence) {
-        this.stopId = stopId;
-        this.stopName = stopName;
-        this.stopSequence = stopSequence;
+        this.mStopId = stopId;
+        this.mStopName = stopName;
+        this.mStopSequence = stopSequence;
     }
 
     public Route getRoute() {
-        return this.route;
+        return this.mRoute;
     }
 
     public void setRoute(Route route) {
-        this.route = route;
+        this.mRoute = route;
     }
 
     public String getStopId() {
-        return this.stopId;
+        return this.mStopId;
     }
 
     public String getStopName() {
-        return this.stopName;
+        return this.mStopName;
     }
 
     public int getStopSequence() {
-        return this.stopSequence;
+        return this.mStopSequence;
     }
 
     // ListView implementation.
     public String getTitle() {
-        return this.stopName;
+        return this.mStopName;
     }
 
     public String getSubtitle() {
-        return this.stopId;
+        return this.mStopId;
     }
 
     // Misc.
     public String getFull() {
-        return this.stopId + " - " + this.stopName;
+        return this.mStopId + " - " + this.mStopName;
     }
 }

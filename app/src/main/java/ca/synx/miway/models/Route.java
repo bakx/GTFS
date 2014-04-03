@@ -11,37 +11,37 @@ import java.io.Serializable;
 import ca.synx.miway.interfaces.IListItem;
 
 public class Route implements IListItem, Serializable {
-    private String routeNumber;
-    private String routeName;
-    private String routeHeading;
+    private String mRouteNumber;
+    private String mRouteName;
+    private String mRouteHeading;
 
     public Route(String routeNumber, String routeName, String routeHeading) {
-        this.routeNumber = routeNumber;
-        this.routeName = routeName;
-        this.routeHeading = routeHeading;
+        this.mRouteNumber = routeNumber;
+        this.mRouteName = routeName;
+        this.mRouteHeading = routeHeading;
     }
 
     public String getRouteName() {
-        return this.routeName;
+        return this.mRouteName;
     }
 
     public String getRouteNumber() {
-        return this.routeNumber;
+        return this.mRouteNumber;
     }
 
     public String getRouteHeading() {
-        return this.routeHeading;
+        return this.mRouteHeading;
     }
 
     public String getTitle() {
-        return this.routeNumber + " " + this.routeName;
+        return this.mRouteNumber + " " + this.mRouteName;
     }
 
     public String getSubtitle() {
-        return this.routeHeading;
+        return this.mRouteHeading;
     }
 
     public String getFull() {
-        return this.routeNumber + this.routeHeading.substring(0, 1) + " - " + this.routeName;
+        return this.mRouteNumber + this.mRouteHeading.substring(0, 1) + " - " + this.mRouteName;
     }
 }

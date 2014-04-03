@@ -29,8 +29,14 @@
     <!-- sort out -->
     <string name="connection_error">Unable to load content. Check your network connection.</string>
     <string name="xml_error">Error parsing XML.</string>
+    <string name="next_stoptime">%1$s (%2$s min)</string>
+
     <string name="no_stop_times_scheduled">No stops scheduled</string>
     <string name="loading">Loading data, please wait......</string>
+    <string name="title_please_wait">Please wait</string>
+    <string name="loading_routes">Loading Routes</string>
+    <string name="loading_stop_times">Loading Stop Times</string>
+    <string name="loading_stops">Loading Stops</string>
 
     <item name="tag_id_1" type="id"></item>
     <item name="tag_id_2" type="id"></item>

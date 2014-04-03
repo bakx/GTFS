@@ -7,6 +7,7 @@
 package ca.synx.miway.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -34,6 +35,9 @@ public class StopsActivity extends Activity implements IStopsTask {
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
 
+    private ProgressDialog mProgressDialog;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +53,7 @@ public class StopsActivity extends Activity implements IStopsTask {
 
             // Get the message from the intent
             Intent intent = getIntent();
-            mRoute = (Route) intent.getSerializableExtra("routeData");
+            mRoute = (Route) intent.getSerializableExtra(ROUTE_DATA);
 
         } else {
             mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
@@ -60,8 +64,22 @@ public class StopsActivity extends Activity implements IStopsTask {
     protected void onStart() {
         super.onStart();
 
-        // Update label.
-        setTitle(String.format(getTitle().toString(), mRoute.getTitle(), mRoute.getSubtitle()));
+        mContext = this;
+        mDatabaseHandler = new DatabaseHandler(this);
+        mStorageHandler = new StorageHandler(mDatabaseHandler);
+
+        // Display loading dialog.
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.title_please_wait));
+        mProgressDialog.setMessage(getString(R.string.loading_stops));
+        mProgressDialog.show();
+
+        // Update the title of the activity.
+        setTitle(String.format(
+                getString(R.string.stops),
+                mRoute.getTitle(),
+                mRoute.getSubtitle()
+        ));
 
         // Execute task.
         new StopsTask(this, mStorageHandler).execute(mRoute);
@@ -112,5 +130,8 @@ public class StopsActivity extends Activity implements IStopsTask {
                 startActivity(intent);
             }
         });
+
+        // This function is called latest. Once this is complete, the process loading dialog can be dismissed.
+        mProgressDialog.dismiss();
     }
 }

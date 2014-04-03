@@ -21,11 +21,11 @@ import ca.synx.miway.util.StorageHandler;
 
 public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
 
-    private IRoutesTask mRouteTaskListener;
+    private IRoutesTask mListener;
     private StorageHandler mStorageHandler;
 
     public RoutesTask(IRoutesTask listener, StorageHandler storageHandler) {
-        this.mRouteTaskListener = listener;
+        this.mListener = listener;
         this.mStorageHandler = storageHandler;
     }
 
@@ -61,6 +61,6 @@ public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
     protected void onPostExecute(List<Route> routes) {
         super.onPostExecute(routes);
 
-        mRouteTaskListener.onRoutesTaskComplete(routes);
+        mListener.onRoutesTaskComplete(routes);
     }
 }

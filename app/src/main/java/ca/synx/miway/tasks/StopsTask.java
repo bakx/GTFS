@@ -23,11 +23,11 @@ import ca.synx.miway.util.StorageHandler;
 
 public class StopsTask extends AsyncTask<Route, Void, List<Stop>> {
 
-    private IStopsTask mStopsTaskListener;
+    private IStopsTask mListener;
     private StorageHandler mStorageHandler;
 
     public StopsTask(IStopsTask stopsTaskListener, StorageHandler storageHandler) {
-        this.mStopsTaskListener = stopsTaskListener;
+        this.mListener = stopsTaskListener;
         this.mStorageHandler = storageHandler;
     }
 
@@ -61,7 +61,7 @@ public class StopsTask extends AsyncTask<Route, Void, List<Stop>> {
     protected void onPostExecute(List<Stop> stops) {
         super.onPostExecute(stops);
 
-        mStopsTaskListener.onStopsTaskComplete(
+        mListener.onStopsTaskComplete(
                 stops
         );
     }

@@ -52,11 +52,10 @@
         android:textSize="19dp"
         android:textStyle="bold" />
 
-    <ListView
-        android:id="@+id/stopTimesListView"
-        android:layout_width="wrap_content"
+    <GridView
+        android:id="@+id/stopTimesGridView"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/stopTimesTextView"
-        android:divider="@null" />
+        android:layout_below="@id/stopTimesTextView" />
 
 </RelativeLayout>

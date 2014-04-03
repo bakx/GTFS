@@ -21,22 +21,22 @@ import ca.synx.miway.models.StopTime;
 
 public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter<Favorite> {
 
-    public FavoriteItemAdapter(List<Favorite> list, int listViewResourceID, boolean displayNextItemIcon, Context ctx) {
-        super(list, listViewResourceID, displayNextItemIcon, ctx);
+    public FavoriteItemAdapter(List<Favorite> list, int resourceId, boolean showNextIcon, Context context) {
+        super(list, resourceId, showNextIcon, context);
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
 
         View v = view;
-        Favorite favorite = null;
+        Favorite favorite;
         Holder holder = new Holder();
 
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(listViewResourceID, null);
+            v = inflater.inflate(mResourceId, null);
 
-            if (!showNextIcon) {
+            if (!mShowNextIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
                 imageView.setVisibility(View.GONE);
             }

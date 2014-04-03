@@ -16,7 +16,7 @@ public class Favorite implements Serializable, IFavorite {
 
     private int mId;
     private Stop mStop;
-    private List<StopTime> mNearestStopTimes;
+    private List<StopTime> mNextStopTimes;
     private List<StopTime> mStopTimes;
 
     private StorageHandler mStorageHandler;
@@ -31,12 +31,11 @@ public class Favorite implements Serializable, IFavorite {
     }
 
     public Stop getStop() {
-        return (null == this.mStop) ? new Stop("", "", 0) : this.mStop;
+        return (null == mStop) ? new Stop("", "", 0) : this.mStop;
     }
 
-    public void setStopTimes(List<StopTime> nearestStopTimes, List<StopTime> stopTimes) {
-        this.mNearestStopTimes = nearestStopTimes;
-        this.mStopTimes = stopTimes;
+    public void setNextStopTimes(List<StopTime> nextStopTimes) {
+        this.mNextStopTimes = nextStopTimes;
     }
 
     /* <Implementation of interface IDBItem> */
@@ -47,23 +46,27 @@ public class Favorite implements Serializable, IFavorite {
     public void setId(int id) {
         this.mId = id;
     }
-    /* </Implementation of interface IDBItem> */
 
     /* <Implementation of interface IFavorite> */
     public String getTitle() {
-        return this.mStop.getRoute().getFull();
+        return mStop.getRoute().getFull();
     }
+    /* </Implementation of interface IDBItem> */
 
     public String getSubtitle() {
-        return this.mStop.getStopName();
+        return mStop.getStopName();
     }
 
     public List<StopTime> getStopTimes() {
         return mStopTimes;
     }
 
+    public void setStopTimes(List<StopTime> stopTimes) {
+        this.mStopTimes = stopTimes;
+    }
+
     public List<StopTime> getNearestStopTimes() {
-        return mNearestStopTimes;
+        return mNextStopTimes;
     }
 
     /* </Implementation of interface IFavorite> */

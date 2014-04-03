@@ -10,6 +10,6 @@ import java.util.List;
 
 import ca.synx.miway.models.StopTime;
 
-public interface IStopTimesTask {
-    void onStopTimesTaskComplete(List<StopTime> stopTimes);
+public interface INextStopTimesTask {
+    void onNextStopTimesTaskComplete(List<StopTime> nextStopTimes);
 }

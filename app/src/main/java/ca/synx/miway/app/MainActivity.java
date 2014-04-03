@@ -6,6 +6,7 @@
 
 package ca.synx.miway.app;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -47,6 +48,8 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     private ListView mFavoritesListView;
     private ListView mRoutesListView;
 
+    private ProgressDialog mProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +67,13 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     protected void onStart() {
         super.onStart();
 
+        // Display loading dialog.
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(getString(R.string.title_please_wait));
+        mProgressDialog.setMessage(getString(R.string.loading_routes));
+        mProgressDialog.show();
+
+        // Set up class..
         mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
         mRoutesListView = (ListView) findViewById(R.id.routesListView);
 
@@ -141,7 +151,7 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
         // Get the stop times for all favorites.
         for (Favorite favorite : favorites) {
-            new FavoriteHelper(this, favorite, mStorageHandler).loadStopTimes();
+            new FavoriteHelper(mContext, this, mStorageHandler, favorite).loadStopTimes();
         }
     }
 
@@ -172,6 +182,9 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
                 startActivity(intent);
             }
         });
+
+        // This function is called latest. Once this is complete, the process loading dialog can be dismissed.
+        mProgressDialog.dismiss();
     }
 
     @Override

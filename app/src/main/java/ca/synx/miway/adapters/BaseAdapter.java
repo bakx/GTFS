@@ -21,43 +21,30 @@ import ca.synx.miway.interfaces.IListItem;
 
 public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
-    public int listViewResourceID;
-    public boolean showNextIcon = true;
+    public int mResourceId;
+    public boolean mShowNextIcon = true;
     public List<T> mList;
     public Context mContext;
 
-    public BaseAdapter(List<T> list, int listViewResourceID, boolean showNextIcon, Context ctx) {
-        super(ctx, listViewResourceID, list);
+    public BaseAdapter(List<T> list, int resourceId, boolean showNextIcon, Context context) {
+        super(context, resourceId, list);
 
-        this.listViewResourceID = listViewResourceID;
-        this.showNextIcon = showNextIcon;
         this.mList = list;
-        this.mContext = ctx;
-    }
-
-    public int getCount() {
-        return mList.size();
-    }
-
-    public T getItem(int position) {
-        return mList.get(position);
-    }
-
-    public long getItemId(int position) {
-        return mList.get(position).hashCode();
+        this.mResourceId = resourceId;
+        this.mShowNextIcon = showNextIcon;
+        this.mContext = context;
     }
 
     public View getView(int position, View view, ViewGroup parent) {
 
         View v = view;
-        T t = null;
         Holder holder = new Holder();
 
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(listViewResourceID, null);
+            v = inflater.inflate(mResourceId, null);
 
-            if (!showNextIcon) {
+            if (!mShowNextIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
                 imageView.setVisibility(View.GONE);
             }
@@ -72,8 +59,9 @@ public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
             holder = (Holder) v.getTag(R.id.tag_id_1);
         }
 
-        // Get position of list item.
-        t = mList.get(position);
+        // Get a reference to the object that's placed in the ArrayAdapter<T> at a position specified
+        // by Android (ListView control takes care of handling what position should be shown).
+        T t = mList.get(position);
 
         // Update tag of view with object reference of object T
         v.setTag(R.id.tag_id_2, (T) t);
