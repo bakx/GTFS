@@ -14,8 +14,10 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -30,6 +32,7 @@ import java.util.List;
 
 import ca.synx.miway.interfaces.IStopsTask;
 import ca.synx.miway.models.Stop;
+import ca.synx.miway.tasks.StopsTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
@@ -42,6 +45,8 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
     private GoogleMap mGoogleMap;
     private LocationListener mLocationListener;
     private List<Stop> mStops;
+
+    private boolean mLocationFix = false;
 
     private ProgressDialog mProgressDialog;
 
@@ -65,6 +70,9 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
             alertDialog.show();
             return;
         }
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
     }
 
     @Override
@@ -75,26 +83,37 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
         mDatabaseHandler = new DatabaseHandler(this);
         mStorageHandler = new StorageHandler(mDatabaseHandler);
 
-        // Display loading dialog.
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(getString(R.string.loading_stops));
-        mProgressDialog.show();
-
         // Update the title of the activity.
         setTitle(String.format(
                 getString(R.string.map)
         ));
 
+        //
         // Initiate map.
+        //
+
         mGoogleMap = ((SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map))
                 .getMap();
 
-        mGoogleMap.setTrafficEnabled(false);
+        if (mGoogleMap == null)
+            return;
+
         mGoogleMap.setMyLocationEnabled(true);
 
         // Get a fix on the location.
         getLocation();
+
+        //
+        // Get stop data.
+        //
+
+        // Display loading dialog.
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(getString(R.string.loading_stops));
+        mProgressDialog.show();
+
+        new StopsTask(this, mStorageHandler).execute();
     }
 
     protected void getLocation() {
@@ -106,18 +125,26 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
         mLocationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
 
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(location.getLatitude(), location.getLongitude()), 13)
-                );
+                if (!mLocationFix) {
+                    Toast.makeText(mContext, "onLocationChanged called", Toast.LENGTH_SHORT);
+
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                    new LatLng(location.getLatitude(), location.getLongitude()), 13)
+                    );
+
+                    mLocationFix = true;
+                }
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
             }
 
             public void onProviderEnabled(String provider) {
+                Toast.makeText(mContext, "GPS is Enabled", Toast.LENGTH_SHORT);
             }
 
             public void onProviderDisabled(String provider) {
+                Toast.makeText(mContext, "GPS is Disabled", Toast.LENGTH_SHORT);
             }
         };
 
@@ -131,11 +158,9 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
 
         int progress = 0;
 
-        mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(getString(R.string.processing_map_data));
         mProgressDialog.setProgress(progress);
         mProgressDialog.setMax(mStops.size());
-        mProgressDialog.show();
 
         for (Stop stop : mStops) {
             try {
@@ -161,10 +186,6 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
     @Override
     public void onStopsTaskComplete(List<Stop> stops) {
         mStops = stops;
-
-        // Dismiss the progress dialog (if any)
-        if (mProgressDialog != null && mProgressDialog.isShowing())
-            mProgressDialog.dismiss();
 
         drawMarkers();
     }

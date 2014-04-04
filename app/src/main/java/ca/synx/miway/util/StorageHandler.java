@@ -197,22 +197,7 @@ public final class StorageHandler {
         Cursor cursor = null;
 
         try {
-            cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_ROUTE_NUMBER, null);
-
-            cursor = db.query(CacheStopTimesTable.TABLE_NAME,
-                    new String[]{
-                            CacheStopTimesTable.COLUMN_STOP_ID,
-                            CacheStopTimesTable.COLUMN_STOP_NAME,
-                            CacheStopTimesTable.COLUMN_STOP_LAT,
-                            CacheStopTimesTable.COLUMN_STOP_LON,
-                            CacheStopTimesTable.COLUMN_STOP_SEQUENCE
-                    },
-                    CacheStopTimesTable.COLUMN_ROUTE_NUMBER + " = ? " +
-                            "AND " + CacheStopTimesTable.COLUMN_ROUTE_HEADING + " = ? " +
-                            "AND " + CacheStopTimesTable.COLUMN_SERVICE_DATE + " = ? ",
-                    new String[]{},
-                    null, null, null
-            );
+            cursor = db.rawQuery("SELECT * FROM " + CacheStopTimesTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_STOP_ID, null);
 
             if (cursor.moveToFirst() && cursor.getCount() > 0) {
 
@@ -254,9 +239,6 @@ public final class StorageHandler {
         try {
             for (Stop stop : stops) {
                 ContentValues values = new ContentValues();
-                values.put(CacheStopTimesTable.COLUMN_ROUTE_NUMBER, stop.getRoute().getRouteNumber());
-                values.put(CacheStopTimesTable.COLUMN_ROUTE_NAME, stop.getRoute().getRouteName());
-                values.put(CacheStopTimesTable.COLUMN_ROUTE_HEADING, stop.getRoute().getRouteHeading());
                 values.put(CacheStopTimesTable.COLUMN_STOP_ID, stop.getStopId());
                 values.put(CacheStopTimesTable.COLUMN_STOP_NAME, stop.getStopName());
                 values.put(CacheStopTimesTable.COLUMN_STOP_LAT, Double.toString(stop.getStopLat()));

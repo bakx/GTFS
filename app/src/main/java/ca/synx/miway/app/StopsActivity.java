@@ -6,11 +6,11 @@
 
 package ca.synx.miway.app;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -26,7 +26,7 @@ import ca.synx.miway.tasks.RouteStopsTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class StopsActivity extends Activity implements IStopsTask {
+public class StopsActivity extends ActionBarActivity implements IStopsTask {
 
     static final String ROUTE_DATA = "routeData";
     Route mRoute;
@@ -58,6 +58,8 @@ public class StopsActivity extends Activity implements IStopsTask {
         } else {
             mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
         }
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override

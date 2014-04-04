@@ -47,15 +47,32 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="ca.synx.miway.app.StopsActivity"
-            android:label="@string/stops"></activity>
+            android:label="@string/stops"
+            android:parentActivityName="ca.synx.miway.app.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.synx.miway.app.MainActivity" />
+
+        </activity>
+
         <activity
             android:name="ca.synx.miway.app.StopTimesActivity"
             android:label="@string/stop_times"></activity>
+
         <activity
             android:name="ca.synx.miway.app.MapActivity"
-            android:label="@string/map"></activity>
+            android:label="@string/map"
+            android:parentActivityName="ca.synx.miway.app.MainActivity">
+
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="ca.synx.miway.app.MainActivity" />
+
+        </activity>
     </application>
 
 </manifest>
