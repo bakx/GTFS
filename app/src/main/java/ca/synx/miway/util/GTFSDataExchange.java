@@ -24,12 +24,11 @@ public class GTFSDataExchange {
 
     private static String GTFS_BASE_URL = "http://miway.dataservices.synx.ca";
     private static String GET_ROUTES_URL = "/api/GTFS/GetRoutes/%s";
-    private static String GET_STOPS_URL = "/api/GTFS/GetStops/%s/%s/%s";
-    private static String GET_STOP_TIMES_URL = "/api/GTFS/GetStops/%s/%s/%s/%s";
-    private String mTransitCompany;
+    private static String GET_STOPS_URL = "/api/GTFS/GetStops";
+    private static String GET_STOPS_ROUTE_URL = "/api/GTFS/GetStops/%s/%s/%s";
+    private static String GET_STOP_TIMES_URL = "/api/GTFS/GetStopTimes/%s/%s/%s/%s";
 
-    public GTFSDataExchange(String transitCompany) {
-        this.mTransitCompany = transitCompany;
+    public GTFSDataExchange() {
     }
 
     private String getData(String dataURL) {
@@ -51,7 +50,8 @@ public class GTFSDataExchange {
 
             return sb.toString();
         } catch (Exception e) {
-            Log.v("GTFSDataExchange.getData threw error", e.getMessage());
+            Log.e("GTFSDataExchange:getData", "" + e.getMessage());
+            e.printStackTrace();
             return null;
         }
     }
@@ -62,9 +62,15 @@ public class GTFSDataExchange {
         );
     }
 
+    public String getStopsData() {
+        return getData(
+                String.format(GTFS_BASE_URL + GET_STOPS_URL)
+        );
+    }
+
     public String getStopsData(Route route) {
         return getData(
-                String.format(GTFS_BASE_URL + GET_STOPS_URL, route.getRouteNumber(), route.getRouteHeading(), GTFS.getServiceTimeStamp())
+                String.format(GTFS_BASE_URL + GET_STOPS_ROUTE_URL, route.getRouteNumber(), route.getRouteHeading(), GTFS.getServiceTimeStamp())
         );
     }
 

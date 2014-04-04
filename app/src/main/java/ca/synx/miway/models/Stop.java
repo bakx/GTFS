@@ -13,21 +13,20 @@ import ca.synx.miway.interfaces.IListItem;
 public class Stop implements IListItem, Serializable {
     private String mStopId;
     private String mStopName;
+    private double mStopLat;
+    private double mStopLon;
     private int mStopSequence;
     private Route mRoute;
 
-    public Stop(String stopId, String stopName, int stopSequence) {
+    public Stop() {
+    }
+
+    public Stop(String stopId, String stopName, String stopLat, String stopLon, int stopSequence) {
         this.mStopId = stopId;
         this.mStopName = stopName;
+        this.mStopLat = Double.valueOf(stopLat);
+        this.mStopLon = Double.valueOf(stopLon);
         this.mStopSequence = stopSequence;
-    }
-
-    public Route getRoute() {
-        return this.mRoute;
-    }
-
-    public void setRoute(Route route) {
-        this.mRoute = route;
     }
 
     public String getStopId() {
@@ -38,8 +37,24 @@ public class Stop implements IListItem, Serializable {
         return this.mStopName;
     }
 
+    public double getStopLat() {
+        return this.mStopLat;
+    }
+
+    public double getStopLon() {
+        return this.mStopLon;
+    }
+
     public int getStopSequence() {
         return this.mStopSequence;
+    }
+
+    public Route getRoute() {
+        return this.mRoute;
+    }
+
+    public void setRoute(Route route) {
+        this.mRoute = route;
     }
 
     // ListView implementation.

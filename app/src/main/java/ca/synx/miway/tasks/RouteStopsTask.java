@@ -14,31 +14,35 @@ import org.json.JSONException;
 import java.util.List;
 
 import ca.synx.miway.interfaces.IStopsTask;
+import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.util.GTFSDataExchange;
 import ca.synx.miway.util.GTFSParser;
 import ca.synx.miway.util.StorageHandler;
 
-public class StopsTask extends AsyncTask<Void, Void, List<Stop>> {
+public class RouteStopsTask extends AsyncTask<Route, Void, List<Stop>> {
 
     private IStopsTask mListener;
     private StorageHandler mStorageHandler;
 
-    public StopsTask(IStopsTask stopsTaskListener, StorageHandler storageHandler) {
+    public RouteStopsTask(IStopsTask stopsTaskListener, StorageHandler storageHandler) {
         this.mListener = stopsTaskListener;
         this.mStorageHandler = storageHandler;
     }
 
     @Override
-    protected List<Stop> doInBackground(Void... params) {
+    protected List<Stop> doInBackground(Route... params) {
 
-        List<Stop> stops = mStorageHandler.getStops();
+        Route route = params[0];
+
+        List<Stop> stops = mStorageHandler.getRouteStops(route);
 
         // Check if items were found in cache.
         if (stops.size() > 0)
             return stops;
 
-        String data = (new GTFSDataExchange().getStopsData());
+
+        String data = (new GTFSDataExchange().getStopsData(route));
 
         if (data == null)
             return null;
@@ -47,13 +51,16 @@ public class StopsTask extends AsyncTask<Void, Void, List<Stop>> {
             stops = GTFSParser.getStops(data);
 
         } catch (JSONException e) {
-            Log.e("StopsTask:doInBackground", "" + e.getMessage());
+            Log.e("RouteStopsTask:doInBackground", "" + e.getMessage());
             e.printStackTrace();
         }
 
+        for (Stop stop : stops)
+            stop.setRoute(route);
+
 
         // Store items in cache.
-        mStorageHandler.saveStops(stops);
+        mStorageHandler.saveRouteStops(stops);
 
         return stops;
     }

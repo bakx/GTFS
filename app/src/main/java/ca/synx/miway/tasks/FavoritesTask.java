@@ -35,7 +35,7 @@ public class FavoritesTask extends AsyncTask<String, Void, List<Favorite>> {
         try {
             favorites = new StorageHandler(mDatabaseHandler).getFavorites();
         } catch (Exception e) {
-            Log.e("FavoritesTask:doInBackground", e.getMessage());
+            Log.e("FavoritesTask:doInBackground", "" + e.getMessage());
             e.printStackTrace();
         }
 

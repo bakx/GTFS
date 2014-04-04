@@ -22,7 +22,7 @@ import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.interfaces.IStopsTask;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
-import ca.synx.miway.tasks.StopsTask;
+import ca.synx.miway.tasks.RouteStopsTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
@@ -70,7 +70,6 @@ public class StopsActivity extends Activity implements IStopsTask {
 
         // Display loading dialog.
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(getString(R.string.title_please_wait));
         mProgressDialog.setMessage(getString(R.string.loading_stops));
         mProgressDialog.show();
 
@@ -82,7 +81,7 @@ public class StopsActivity extends Activity implements IStopsTask {
         ));
 
         // Execute task.
-        new StopsTask(this, mStorageHandler).execute(mRoute);
+        new RouteStopsTask(this, mStorageHandler).execute(mRoute);
     }
 
     @Override

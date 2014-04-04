@@ -75,7 +75,6 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
         // Display loading dialog.
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(getString(R.string.title_please_wait));
         mProgressDialog.setMessage(getString(R.string.loading_stop_times));
         mProgressDialog.show();
 

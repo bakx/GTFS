@@ -51,7 +51,7 @@ public class NextStopTimesTask extends AsyncTask<List<StopTime>, Void, List<Stop
             ).getTime();
 
         } catch (Exception e) {
-            Log.e("StopTimesTask:getNearestStopTimes", e.getMessage());
+            Log.e("NextStopTimesTask:doInBackground", "" + e.getMessage());
             e.printStackTrace();
 
             return nearestStopTimes;
@@ -110,7 +110,7 @@ public class NextStopTimesTask extends AsyncTask<List<StopTime>, Void, List<Stop
 
                 nearestStopTimes.add(nearStopTime);
             } catch (Exception e) {
-                Log.e("StopTimesTask:getNearestStopTimes (departureTime parsing)", e.getMessage());
+                Log.e("NextStopTimesTask:doInBackground", "" + e.getMessage());
                 e.printStackTrace();
             }
 

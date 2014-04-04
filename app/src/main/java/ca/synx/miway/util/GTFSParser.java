@@ -6,6 +6,8 @@
 
 package ca.synx.miway.util;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +38,7 @@ public class GTFSParser {
                         )
                 );
             } catch (Exception e) {
+                Log.e("GTFSParser:getRoutes", "" + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -55,10 +58,13 @@ public class GTFSParser {
                         new Stop(
                                 jsonObject.getString("StopId"),
                                 jsonObject.getString("StopName"),
+                                jsonObject.getString("StopLat"),
+                                jsonObject.getString("StopLon"),
                                 jsonObject.getInt("StopSequence")
                         )
                 );
             } catch (Exception e) {
+                Log.e("GTFSParser:getStops", "" + e.getMessage());
                 e.printStackTrace();
             }
         }
@@ -81,6 +87,7 @@ public class GTFSParser {
                         )
                 );
             } catch (Exception e) {
+                Log.e("GTFSParser:getStopTimes", "" + e.getMessage());
                 e.printStackTrace();
             }
         }

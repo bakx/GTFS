@@ -31,7 +31,7 @@ public class Favorite implements Serializable, IFavorite {
     }
 
     public Stop getStop() {
-        return (null == mStop) ? new Stop("", "", 0) : this.mStop;
+        return (null == mStop) ? new Stop() : this.mStop;
     }
 
     public void setNextStopTimes(List<StopTime> nextStopTimes) {

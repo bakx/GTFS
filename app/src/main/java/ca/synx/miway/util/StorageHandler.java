@@ -18,6 +18,7 @@ import ca.synx.miway.models.Favorite;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
 import ca.synx.miway.models.StopTime;
+import ca.synx.miway.tables.CacheRouteStopsTable;
 import ca.synx.miway.tables.CacheRoutesTable;
 import ca.synx.miway.tables.CacheStopTimesTable;
 import ca.synx.miway.tables.FavoriteTable;
@@ -92,7 +93,181 @@ public final class StorageHandler {
                 db.insert(CacheRoutesTable.TABLE_NAME, null, values);
             }
         } catch (Exception e) {
-            Log.e("StorageHandler:saveRoutes", e.getMessage());
+            Log.e("StorageHandler:saveRoutes", "" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
+    public List<Stop> getRouteStops(Route route) {
+
+        List<Stop> list = new ArrayList<Stop>();
+
+        SQLiteDatabase db = mDatabaseHandler.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.query(CacheRouteStopsTable.TABLE_NAME,
+                    new String[]{
+                            CacheRouteStopsTable.COLUMN_STOP_ID,
+                            CacheRouteStopsTable.COLUMN_STOP_NAME,
+                            CacheRouteStopsTable.COLUMN_STOP_LAT,
+                            CacheRouteStopsTable.COLUMN_STOP_LON,
+                            CacheRouteStopsTable.COLUMN_STOP_SEQUENCE
+                    },
+                    CacheRouteStopsTable.COLUMN_ROUTE_NUMBER + " = ? " +
+                            "AND " + CacheRouteStopsTable.COLUMN_ROUTE_HEADING + " = ? " +
+                            "AND " + CacheRouteStopsTable.COLUMN_SERVICE_DATE + " = ? ",
+                    new String[]{
+                            route.getRouteNumber(),
+                            route.getRouteHeading(),
+                            GTFS.getServiceTimeStamp()
+                    }, null, null, null
+            );
+
+            if (cursor.moveToFirst() && cursor.getCount() > 0) {
+
+                while (cursor.isAfterLast() == false) {
+
+                    Stop stop = new Stop(
+                            cursor.getString(cursor.getColumnIndex(CacheRouteStopsTable.COLUMN_STOP_ID)),
+                            cursor.getString(cursor.getColumnIndex(CacheRouteStopsTable.COLUMN_STOP_NAME)),
+                            cursor.getString(cursor.getColumnIndex(CacheRouteStopsTable.COLUMN_STOP_LAT)),
+                            cursor.getString(cursor.getColumnIndex(CacheRouteStopsTable.COLUMN_STOP_LON)),
+                            cursor.getInt(cursor.getColumnIndex(CacheRouteStopsTable.COLUMN_STOP_SEQUENCE))
+                    );
+
+                    // Attach route.
+                    stop.setRoute(route);
+
+                    // Add item to list.
+                    list.add(stop);
+
+                    // Continue.
+                    cursor.moveToNext();
+                }
+            }
+
+        } catch (Exception e) {
+            Log.e("StorageHandler:getRouteStops", "" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+
+            db.close();
+        }
+
+        return list;
+    }
+
+    public void saveRouteStops(List<Stop> stops) {
+
+        SQLiteDatabase db = this.mDatabaseHandler.getWritableDatabase();
+
+        try {
+            for (Stop stop : stops) {
+                ContentValues values = new ContentValues();
+                values.put(CacheRouteStopsTable.COLUMN_ROUTE_NUMBER, stop.getRoute().getRouteNumber());
+                values.put(CacheRouteStopsTable.COLUMN_ROUTE_NAME, stop.getRoute().getRouteName());
+                values.put(CacheRouteStopsTable.COLUMN_ROUTE_HEADING, stop.getRoute().getRouteHeading());
+                values.put(CacheRouteStopsTable.COLUMN_STOP_ID, stop.getStopId());
+                values.put(CacheRouteStopsTable.COLUMN_STOP_NAME, stop.getStopName());
+                values.put(CacheRouteStopsTable.COLUMN_STOP_LAT, Double.toString(stop.getStopLat()));
+                values.put(CacheRouteStopsTable.COLUMN_STOP_LON, Double.toString(stop.getStopLon()));
+                values.put(CacheRouteStopsTable.COLUMN_STOP_SEQUENCE, stop.getStopSequence());
+                values.put(CacheRouteStopsTable.COLUMN_SERVICE_DATE, GTFS.getServiceTimeStamp());
+
+                db.insert(CacheRouteStopsTable.TABLE_NAME, null, values);
+            }
+        } catch (Exception e) {
+            Log.e("StorageHandler:saveRouteStops", "" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            db.close();
+        }
+    }
+
+    public List<Stop> getStops() {
+
+        List<Stop> list = new ArrayList<Stop>();
+
+        SQLiteDatabase db = mDatabaseHandler.getReadableDatabase();
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_ROUTE_NUMBER, null);
+
+            cursor = db.query(CacheStopTimesTable.TABLE_NAME,
+                    new String[]{
+                            CacheStopTimesTable.COLUMN_STOP_ID,
+                            CacheStopTimesTable.COLUMN_STOP_NAME,
+                            CacheStopTimesTable.COLUMN_STOP_LAT,
+                            CacheStopTimesTable.COLUMN_STOP_LON,
+                            CacheStopTimesTable.COLUMN_STOP_SEQUENCE
+                    },
+                    CacheStopTimesTable.COLUMN_ROUTE_NUMBER + " = ? " +
+                            "AND " + CacheStopTimesTable.COLUMN_ROUTE_HEADING + " = ? " +
+                            "AND " + CacheStopTimesTable.COLUMN_SERVICE_DATE + " = ? ",
+                    new String[]{},
+                    null, null, null
+            );
+
+            if (cursor.moveToFirst() && cursor.getCount() > 0) {
+
+                while (cursor.isAfterLast() == false) {
+
+                    Stop stop = new Stop(
+                            cursor.getString(cursor.getColumnIndex(CacheStopTimesTable.COLUMN_STOP_ID)),
+                            cursor.getString(cursor.getColumnIndex(CacheStopTimesTable.COLUMN_STOP_NAME)),
+                            cursor.getString(cursor.getColumnIndex(CacheStopTimesTable.COLUMN_STOP_LAT)),
+                            cursor.getString(cursor.getColumnIndex(CacheStopTimesTable.COLUMN_STOP_LON)),
+                            cursor.getInt(cursor.getColumnIndex(CacheStopTimesTable.COLUMN_STOP_SEQUENCE))
+                    );
+
+                    // Add item to list.
+                    list.add(stop);
+
+                    // Continue.
+                    cursor.moveToNext();
+                }
+            }
+
+        } catch (Exception e) {
+            Log.e("StorageHandler:getStops", "" + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            if (cursor != null && !cursor.isClosed())
+                cursor.close();
+
+            db.close();
+        }
+
+        return list;
+    }
+
+    public void saveStops(List<Stop> stops) {
+
+        SQLiteDatabase db = this.mDatabaseHandler.getWritableDatabase();
+
+        try {
+            for (Stop stop : stops) {
+                ContentValues values = new ContentValues();
+                values.put(CacheStopTimesTable.COLUMN_ROUTE_NUMBER, stop.getRoute().getRouteNumber());
+                values.put(CacheStopTimesTable.COLUMN_ROUTE_NAME, stop.getRoute().getRouteName());
+                values.put(CacheStopTimesTable.COLUMN_ROUTE_HEADING, stop.getRoute().getRouteHeading());
+                values.put(CacheStopTimesTable.COLUMN_STOP_ID, stop.getStopId());
+                values.put(CacheStopTimesTable.COLUMN_STOP_NAME, stop.getStopName());
+                values.put(CacheStopTimesTable.COLUMN_STOP_LAT, Double.toString(stop.getStopLat()));
+                values.put(CacheStopTimesTable.COLUMN_STOP_LON, Double.toString(stop.getStopLon()));
+                values.put(CacheStopTimesTable.COLUMN_STOP_SEQUENCE, stop.getStopSequence());
+                values.put(CacheStopTimesTable.COLUMN_SERVICE_DATE, GTFS.getServiceTimeStamp());
+
+                db.insert(CacheStopTimesTable.TABLE_NAME, null, values);
+            }
+        } catch (Exception e) {
+            Log.e("StorageHandler:saveStops", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             db.close();
@@ -124,7 +299,7 @@ public final class StorageHandler {
                     }, null, null, null
             );
 
-            if (cursor.moveToFirst()) {
+            if (cursor.moveToFirst() && cursor.getCount() > 0) {
 
                 while (cursor.isAfterLast() == false) {
 
@@ -133,15 +308,19 @@ public final class StorageHandler {
                             cursor.getString(cursor.getColumnIndex(CacheStopTimesTable.COLUMN_DEPARTURE_TIME))
                     );
 
+                    // Attach stop.
                     stopTime.setStop(stop);
 
+                    // Add item to list.
                     list.add(stopTime);
+
+                    // Continue.
                     cursor.moveToNext();
                 }
             }
 
         } catch (Exception e) {
-            Log.e("StorageHandler:getStopTimes", e.getMessage());
+            Log.e("StorageHandler:getStopTimes", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             if (cursor != null && !cursor.isClosed())
@@ -165,6 +344,8 @@ public final class StorageHandler {
                 values.put(CacheStopTimesTable.COLUMN_ROUTE_HEADING, stopTime.getStop().getRoute().getRouteHeading());
                 values.put(CacheStopTimesTable.COLUMN_STOP_ID, stopTime.getStop().getStopId());
                 values.put(CacheStopTimesTable.COLUMN_STOP_NAME, stopTime.getStop().getStopName());
+                values.put(CacheStopTimesTable.COLUMN_STOP_LAT, Double.toString(stopTime.getStop().getStopLat()));
+                values.put(CacheStopTimesTable.COLUMN_STOP_LON, Double.toString(stopTime.getStop().getStopLon()));
                 values.put(CacheStopTimesTable.COLUMN_STOP_SEQUENCE, stopTime.getStop().getStopSequence());
                 values.put(CacheStopTimesTable.COLUMN_ARRIVAL_TIME, stopTime.getArrivalTime());
                 values.put(CacheStopTimesTable.COLUMN_DEPARTURE_TIME, stopTime.getDepartureTime());
@@ -173,7 +354,7 @@ public final class StorageHandler {
                 db.insert(CacheStopTimesTable.TABLE_NAME, null, values);
             }
         } catch (Exception e) {
-            Log.e("StorageHandler:saveStopTimes", e.getMessage());
+            Log.e("StorageHandler:saveStopTimes", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             db.close();
@@ -189,7 +370,7 @@ public final class StorageHandler {
         try {
             cursor = db.rawQuery("SELECT * FROM " + FavoriteTable.TABLE_NAME + " ORDER BY " + FavoriteTable.COLUMN_ROUTE_NUMBER, null);
 
-            if (cursor.moveToFirst()) {
+            if (cursor.moveToFirst() && cursor.getCount() > 0) {
 
                 while (cursor.isAfterLast() == false) {
 
@@ -202,6 +383,8 @@ public final class StorageHandler {
                     Stop stop = new Stop(
                             cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_ID)),
                             cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_NAME)),
+                            cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_LAT)),
+                            cursor.getString(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_LON)),
                             cursor.getInt(cursor.getColumnIndex(FavoriteTable.COLUMN_STOP_SEQUENCE))
                     );
 
@@ -217,7 +400,7 @@ public final class StorageHandler {
                 }
             }
         } catch (Exception e) {
-            Log.e("StorageHandler:getFavorites", e.getMessage());
+            Log.e("StorageHandler:getFavorites", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             if (cursor != null && !cursor.isClosed())
@@ -236,6 +419,8 @@ public final class StorageHandler {
             ContentValues values = new ContentValues();
             values.put(FavoriteTable.COLUMN_STOP_ID, favorite.getStop().getStopId());
             values.put(FavoriteTable.COLUMN_STOP_NAME, favorite.getStop().getStopName());
+            values.put(FavoriteTable.COLUMN_STOP_LAT, Double.toString(favorite.getStop().getStopLat()));
+            values.put(FavoriteTable.COLUMN_STOP_LON, Double.toString(favorite.getStop().getStopLon()));
             values.put(FavoriteTable.COLUMN_STOP_SEQUENCE, favorite.getStop().getStopSequence());
             values.put(FavoriteTable.COLUMN_ROUTE_NUMBER, favorite.getStop().getRoute().getRouteNumber());
             values.put(FavoriteTable.COLUMN_ROUTE_NAME, favorite.getStop().getRoute().getRouteName());
@@ -244,7 +429,7 @@ public final class StorageHandler {
             long insertId = db.insert(FavoriteTable.TABLE_NAME, null, values);
             favorite.setId((int) insertId);
         } catch (Exception e) {
-            Log.e("StorageHandler:saveFavorite", e.getMessage());
+            Log.e("StorageHandler:saveFavorite", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             db.close();
@@ -259,7 +444,7 @@ public final class StorageHandler {
             db.delete(FavoriteTable.TABLE_NAME, FavoriteTable.COLUMN_FAVORITE_ID + "=" + favorite.getId(), null);
             favorite.setId(0);
         } catch (Exception e) {
-            Log.e("StorageHandler:removeFavorite", e.getMessage());
+            Log.e("StorageHandler:removeFavorite", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             db.close();
@@ -275,6 +460,8 @@ public final class StorageHandler {
             ContentValues values = new ContentValues();
             values.put(FavoriteTable.COLUMN_STOP_ID, favorite.getStop().getStopId());
             values.put(FavoriteTable.COLUMN_STOP_NAME, favorite.getStop().getStopName());
+            values.put(FavoriteTable.COLUMN_STOP_LAT, Double.toString(favorite.getStop().getStopLat()));
+            values.put(FavoriteTable.COLUMN_STOP_LON, Double.toString(favorite.getStop().getStopLon()));
             values.put(FavoriteTable.COLUMN_STOP_SEQUENCE, favorite.getStop().getStopSequence());
             values.put(FavoriteTable.COLUMN_ROUTE_NUMBER, favorite.getStop().getRoute().getRouteNumber());
             values.put(FavoriteTable.COLUMN_ROUTE_NAME, favorite.getStop().getRoute().getRouteName());
@@ -301,7 +488,7 @@ public final class StorageHandler {
                 return true;
             }
         } catch (Exception e) {
-            Log.e("StorageHandler:isFavorite", e.getMessage());
+            Log.e("StorageHandler:isFavorite", "" + e.getMessage());
             e.printStackTrace();
         } finally {
             if (cursor != null && !cursor.isClosed())

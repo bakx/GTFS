@@ -69,7 +69,6 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
         // Display loading dialog.
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(getString(R.string.title_please_wait));
         mProgressDialog.setMessage(getString(R.string.loading_routes));
         mProgressDialog.show();
 
@@ -109,7 +108,6 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
                 // Display loading dialog.
                 mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setTitle(getString(R.string.title_please_wait));
                 mProgressDialog.setMessage(getString(R.string.loading_stop_times));
                 mProgressDialog.show();
 

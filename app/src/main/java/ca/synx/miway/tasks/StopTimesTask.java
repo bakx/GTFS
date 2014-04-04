@@ -13,6 +13,7 @@ import android.util.Log;
 import org.json.JSONException;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import ca.synx.miway.interfaces.IStopTimesTask;
@@ -45,7 +46,9 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
         if (stopTimes.size() > 0)
             return stopTimes;
 
-        String data = (new GTFSDataExchange("miway").getStopTimesData(stop));
+        stopTimes = new ArrayList<StopTime>();
+
+        String data = (new GTFSDataExchange().getStopTimesData(stop));
 
         if (data == null)
             return null;
@@ -54,7 +57,7 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
             stopTimes = GTFSParser.getStopTimes(data);
 
         } catch (JSONException e) {
-            Log.e("StopTimesTask:doInBackground", e.getMessage());
+            Log.e("StopTimesTask:doInBackground", "" + e.getMessage());
             e.printStackTrace();
         }
 
@@ -83,7 +86,7 @@ public class StopTimesTask extends AsyncTask<Stop, Void, List<StopTime>> {
                         )
                 );
             } catch (Exception e) {
-                Log.e("StopTimesTask:onPostExecute", e.getMessage());
+                Log.e("StopTimesTask:onPostExecute", "" + e.getMessage());
                 e.printStackTrace();
             }
         }

@@ -34,9 +34,10 @@
     <string name="no_stop_times_scheduled">No stops scheduled</string>
     <string name="loading">Loading data, please wait......</string>
     <string name="title_please_wait">Please wait</string>
-    <string name="loading_routes">Loading Routes</string>
-    <string name="loading_stop_times">Loading Stop Times</string>
-    <string name="loading_stops">Loading Stops</string>
+    <string name="loading_routes">Loading routes</string>
+    <string name="loading_stop_times">Loading stop times</string>
+    <string name="loading_stops">Loading stops</string>
+    <string name="processing_map_data">Processing map data</string>
     <string name="sorry">Sorry</string>
     <string name="map_not_available">Map is not available on this device.</string>
     <string name="ok">OK</string>

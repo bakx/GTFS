@@ -38,7 +38,7 @@ public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
             return routes;
 
         // Fetch data from web service.
-        String data = (new GTFSDataExchange("miway").getRouteData());
+        String data = (new GTFSDataExchange().getRouteData());
 
         if (data == null)
             return null;
@@ -47,7 +47,7 @@ public class RoutesTask extends AsyncTask<String, Void, List<Route>> {
             routes = GTFSParser.getRoutes(data);
 
         } catch (JSONException e) {
-            Log.e("RoutesTask:doInBackground", e.getMessage());
+            Log.e("RoutesTask:doInBackground", "" + e.getMessage());
             e.printStackTrace();
         }
 
