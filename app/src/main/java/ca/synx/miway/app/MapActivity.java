@@ -30,24 +30,27 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
+import ca.synx.miway.adapters.SingleItemAdapter;
+import ca.synx.miway.interfaces.IRoutesTask;
 import ca.synx.miway.interfaces.IStopsTask;
+import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
-import ca.synx.miway.tasks.StopsTask;
+import ca.synx.miway.tasks.RouteStopsTask;
+import ca.synx.miway.tasks.RoutesTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class MapActivity extends ActionBarActivity implements IStopsTask {
+public class MapActivity extends ActionBarActivity implements IRoutesTask, IStopsTask, ActionBar.OnNavigationListener {
 
+    private static int mZoomLevel = 15;
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
-
     private GoogleMap mGoogleMap;
     private LocationListener mLocationListener;
+    private List<Route> mRoutes;
     private List<Stop> mStops;
-
     private boolean mLocationFix = false;
-
     private ProgressDialog mProgressDialog;
 
     @Override
@@ -101,19 +104,17 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
 
         mGoogleMap.setMyLocationEnabled(true);
 
-        // Get a fix on the location.
+        //
+        // Location awareness.
+        //
+
         getLocation();
 
         //
-        // Get stop data.
+        // Get route data.
         //
 
-        // Display loading dialog.
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage(getString(R.string.loading_stops));
-        mProgressDialog.show();
-
-        new StopsTask(this, mStorageHandler).execute();
+        new RoutesTask(this, mStorageHandler).execute();
     }
 
     protected void getLocation() {
@@ -129,7 +130,7 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
                     Toast.makeText(mContext, "onLocationChanged called", Toast.LENGTH_SHORT);
 
                     mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(location.getLatitude(), location.getLongitude()), 13)
+                                    new LatLng(location.getLatitude(), location.getLongitude()), mZoomLevel)
                     );
 
                     mLocationFix = true;
@@ -154,14 +155,45 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
         );
     }
 
+    @Override
+    public void onRoutesTaskComplete(List<Route> routes) {
+        mRoutes = routes;
+
+        SingleItemAdapter<Route> mRouteAdapter = new SingleItemAdapter<Route>(mRoutes, R.layout.spinner_item_single, false, mContext);
+        getSupportActionBar().setListNavigationCallbacks(mRouteAdapter, this);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+
+        Route route = mRoutes.get(itemPosition);
+        new RouteStopsTask(this, mStorageHandler).execute(route);
+        return true;
+    }
+
+    @Override
+    public void onStopsTaskComplete(List<Stop> stops) {
+        mStops = stops;
+
+        drawMarkers();
+    }
+
+
     protected void drawMarkers() {
 
         int progress = 0;
 
+        mProgressDialog = new ProgressDialog(mContext);
         mProgressDialog.setMessage(getString(R.string.processing_map_data));
         mProgressDialog.setProgress(progress);
         mProgressDialog.setMax(mStops.size());
+        if (!mProgressDialog.isShowing())
+            mProgressDialog.show();
 
+        // Clear previous markers.
+        mGoogleMap.clear();
+
+        // Draw all stops for selected route.
         for (Stop stop : mStops) {
             try {
                 mGoogleMap.addMarker(new MarkerOptions()
@@ -181,12 +213,5 @@ public class MapActivity extends ActionBarActivity implements IStopsTask {
         // Dismiss the progress dialog (if any)
         if (mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
-    }
-
-    @Override
-    public void onStopsTaskComplete(List<Stop> stops) {
-        mStops = stops;
-
-        drawMarkers();
     }
 }

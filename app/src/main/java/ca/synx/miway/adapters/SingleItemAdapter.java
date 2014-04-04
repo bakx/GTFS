@@ -36,7 +36,7 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
 
             // Inflate the new layout
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.listview_item_single, null);
+            v = inflater.inflate(mResourceId, null);
 
             if (!mShowNextIcon) {
                 ImageView imageView = (ImageView) v.findViewById(R.id.nextitem);
@@ -60,6 +60,11 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
         holder.title.setText(t.getTitle());
 
         return v;
+    }
+
+    @Override
+    public View getDropDownView(int position, View convertView, ViewGroup parent) {
+        return getView(position, convertView, parent);
     }
 
     private static class Holder {
