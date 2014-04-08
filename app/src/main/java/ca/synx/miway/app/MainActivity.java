@@ -10,7 +10,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -22,8 +24,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ca.synx.miway.adapters.BaseAdapter;
 import ca.synx.miway.adapters.FavoriteItemAdapter;
+import ca.synx.miway.adapters.RouteAdapter;
 import ca.synx.miway.helpers.FavoriteHelper;
 import ca.synx.miway.interfaces.IDataUpdate;
 import ca.synx.miway.interfaces.IFavoritesTask;
@@ -35,20 +37,22 @@ import ca.synx.miway.tasks.RoutesTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class MainActivity extends ActionBarActivity implements IFavoritesTask, IRoutesTask, IDataUpdate {
+public class MainActivity extends ActionBarActivity implements IFavoritesTask, IRoutesTask, IDataUpdate, SearchView.OnQueryTextListener {
 
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
 
+    private ProgressDialog mProgressDialog;
+
     private FavoriteItemAdapter<Favorite> mFavoritesAdapter;
-    private BaseAdapter<Route> mRoutesAdapter;
+    private RouteAdapter<Route> mRoutesAdapter;
+
+    private SearchView mSearchView;
 
     private TabHost mTabHost;
     private ListView mFavoritesListView;
     private ListView mRoutesListView;
-
-    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +91,10 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setOnQueryTextListener(this);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -143,7 +151,7 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
     @Override
     public void onFavoritesTaskComplete(List<Favorite> favorites) {
-        mFavoritesAdapter = new FavoriteItemAdapter<Favorite>(favorites, R.layout.listview_item_favorite, true, mContext);
+        mFavoritesAdapter = new FavoriteItemAdapter<Favorite>(mContext, favorites, R.layout.listview_item_favorite, true);
         mFavoritesListView.setAdapter(mFavoritesAdapter);
         mFavoritesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -177,13 +185,18 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
             return;
         }
 
-        mRoutesAdapter = new BaseAdapter<Route>(routes, R.layout.listview_item_basic, true, mContext);
+        mRoutesAdapter = new RouteAdapter<Route>(mContext, routes, R.layout.listview_item_basic, true);
         mRoutesListView.setAdapter(mRoutesAdapter);
         mRoutesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // Get tag from clicked view.
                 Route route = (Route) view.getTag(R.id.tag_id_2);
+
+                // No point in starting a new intent without a route. This can happen when a search
+                // is performed and the user clicks on the 'no results found' list item.
+                if (route == null)
+                    return;
 
                 // Create new intent.
                 Intent intent = new Intent(mContext, StopsActivity.class);
@@ -208,5 +221,16 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         // Dismiss the progress dialog (if any)
         if (mProgressDialog != null && mProgressDialog.isShowing())
             mProgressDialog.dismiss();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        mRoutesAdapter.getFilter().filter(s);
+        return false;
     }
 }

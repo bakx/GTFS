@@ -21,18 +21,18 @@ import ca.synx.miway.interfaces.IListItem;
 
 public class BaseAdapter<T extends IListItem> extends ArrayAdapter<T> {
 
+    public Context mContext;
     public int mResourceId;
     public boolean mShowNextIcon = true;
     public List<T> mList;
-    public Context mContext;
 
-    public BaseAdapter(List<T> list, int resourceId, boolean showNextIcon, Context context) {
+    public BaseAdapter(Context context, List<T> list, int resourceId, boolean showNextIcon) {
         super(context, resourceId, list);
 
+        this.mContext = context;
         this.mList = list;
         this.mResourceId = resourceId;
         this.mShowNextIcon = showNextIcon;
-        this.mContext = context;
     }
 
     public View getView(int position, View view, ViewGroup parent) {

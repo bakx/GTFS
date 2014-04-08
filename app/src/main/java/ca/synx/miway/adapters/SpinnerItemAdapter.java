@@ -10,22 +10,26 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
 
 import ca.synx.miway.app.R;
-import ca.synx.miway.interfaces.IListItem;
+import ca.synx.miway.interfaces.ISpinnerItem;
 
-public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
+public class SpinnerItemAdapter<T extends ISpinnerItem> extends ArrayAdapter<T> {
 
     private Context mContext;
+    private List<T> mList;
+    private int mResourceId;
 
-    public SingleItemAdapter(Context context, List<T> list, int resourceId, boolean showNextIcon) {
-        super(context, list, resourceId, showNextIcon);
+    public SpinnerItemAdapter(Context context, List<T> list, int resourceId) {
+        super(context, resourceId, list);
 
         this.mContext = context;
+        this.mList = list;
+        this.mResourceId = resourceId;
     }
 
     @Override
@@ -40,11 +44,6 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
             // Inflate the new layout.
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(mResourceId, null);
-
-            if (!mShowNextIcon) {
-                ImageView imageView = (ImageView) view.findViewById(R.id.nextitem);
-                imageView.setVisibility(View.GONE);
-            }
 
             // Create references to layout items used in adapter.
             TextView titleView = (TextView) view.findViewById(R.id.title);
@@ -64,7 +63,7 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
         T t = mList.get(position);
 
         // Update title TextView of the view.
-        viewHolder.title.setText(t.getTitle());
+        viewHolder.title.setText(t.getSpinnerTitle());
 
         // Update tag of view with object reference of object T
         view.setTag(R.id.tag_id_2, (T) t);
@@ -81,4 +80,3 @@ public class SingleItemAdapter<T extends IListItem> extends BaseAdapter<T> {
         public TextView title;
     }
 }
-

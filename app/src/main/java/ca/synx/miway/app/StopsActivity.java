@@ -10,7 +10,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -18,7 +23,7 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import ca.synx.miway.adapters.BaseAdapter;
+import ca.synx.miway.adapters.StopAdapter;
 import ca.synx.miway.interfaces.IStopsTask;
 import ca.synx.miway.models.Route;
 import ca.synx.miway.models.Stop;
@@ -26,17 +31,22 @@ import ca.synx.miway.tasks.RouteStopsTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class StopsActivity extends ActionBarActivity implements IStopsTask {
+public class StopsActivity extends ActionBarActivity implements IStopsTask, SearchView.OnQueryTextListener {
 
     static final String ROUTE_DATA = "routeData";
-    Route mRoute;
-    ListView mStopsListView;
+
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
 
+    private StopAdapter<Stop> mStopsAdapter;
+
     private ProgressDialog mProgressDialog;
 
+    private SearchView mSearchView;
+
+    private ListView mStopsListView;
+    private Route mRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +70,44 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask {
         }
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.stops, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchView.setOnQueryTextListener(this);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case android.R.id.home:
+                finish();
+                return true;
+
+            case R.id.action_map:
+
+                // Create new intent.
+                Intent intent = new Intent(mContext, MapActivity.class);
+
+                // Pass route to map.
+                intent.putExtra("routeData", mRoute);
+
+                // Start the intent.
+                startActivity(intent);
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -113,8 +161,8 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask {
             return;
         }
 
-        BaseAdapter<Stop> adapter = new BaseAdapter<Stop>(stops, R.layout.listview_item_basic, true, mContext);
-        mStopsListView.setAdapter(adapter);
+        mStopsAdapter = new StopAdapter<Stop>(mContext, stops, R.layout.listview_item_basic, true);
+        mStopsListView.setAdapter(mStopsAdapter);
         mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
@@ -134,5 +182,16 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask {
 
         // This function is called latest. Once this is complete, the process loading dialog can be dismissed.
         mProgressDialog.dismiss();
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        mStopsAdapter.getFilter().filter(s);
+        return false;
     }
 }

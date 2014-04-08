@@ -9,8 +9,9 @@ package ca.synx.miway.models;
 import java.io.Serializable;
 
 import ca.synx.miway.interfaces.IListItem;
+import ca.synx.miway.interfaces.ISpinnerItem;
 
-public class Route implements IListItem, Serializable {
+public class Route implements IListItem, ISpinnerItem, Serializable {
     private String mRouteNumber;
     private String mRouteName;
     private String mRouteHeading;
@@ -39,6 +40,10 @@ public class Route implements IListItem, Serializable {
 
     public String getSubtitle() {
         return this.mRouteHeading;
+    }
+
+    public String getSpinnerTitle() {
+        return this.mRouteNumber + " " + this.mRouteName + " (" + this.mRouteHeading + ")";
     }
 
     public String getFull() {

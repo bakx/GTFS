@@ -56,6 +56,7 @@
         android:id="@+id/stopTimesGridView"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/stopTimesTextView" />
+        android:layout_below="@id/stopTimesTextView"
+        android:numColumns="3" />
 
 </RelativeLayout>

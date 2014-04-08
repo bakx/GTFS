@@ -102,7 +102,7 @@ public class NextStopTimesTask extends AsyncTask<List<StopTime>, Void, List<Stop
                 StopTime nearStopTime = new StopTime(
                         stopTime.getArrivalTime(),
                         String.format(
-                                mContext.getString(R.string.next_stoptime),
+                                mContext.getString(R.string.next_stop_time),
                                 stopTime.getDepartureTime(),
                                 String.valueOf(timeDifference)
                         )

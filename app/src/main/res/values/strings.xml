@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
   ~ Copyright (c) 2014, SYNX (Gideon Bakx)
   ~
   ~  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
@@ -7,8 +8,6 @@
 <resources>
 
     <string name="app_name">Mississauga Transit</string>
-    <string name="all_stops">All stops</string>
-    <string name="next_stops">Next stops</string>
 
     <!-- Tab Names -->
     <string name="tab_favorites">Favorites</string>
@@ -21,29 +20,44 @@
     <string name="removed_favorites">Removed from Favorites</string>
     <string name="refresh">Refresh</string>
     <string name="map">Map</string>
+    <string name="search">Search</string>
 
     <!-- Titles -->
     <string name="stops">Stops (%1$s - %2$s)</string>
     <string name="stop_times">Stop times</string>
 
-    <!-- sort out -->
-    <string name="connection_error">Unable to load content. Check your network connection.</string>
-    <string name="xml_error">Error parsing XML.</string>
-    <string name="next_stoptime">%1$s (%2$s min)</string>
+    <!-- Route related -->
+    <string name="select_route">Select a Route</string>
+    <string name="search_route">Search for a Route</string>
 
+    <!-- Stops related -->
+    <string name="all_stops">All stops</string>
+    <string name="next_stops">Next stops</string>
+    <string name="search_stop">Search for a Stop</string>
+
+    <!-- Stop times related -->
+    <string name="next_stop_time">%1$s (%2$s min)</string>
     <string name="no_stop_times_scheduled">No stops scheduled</string>
-    <string name="loading">Loading data, please wait......</string>
-    <string name="title_please_wait">Please wait</string>
+
+    <!-- Loading messages -->
     <string name="loading_routes">Loading routes</string>
     <string name="loading_stop_times">Loading stop times</string>
     <string name="loading_stops">Loading stops</string>
+    <string name="loading">Loading data, please wait......</string>
+    <string name="title_please_wait">Please wait</string>
     <string name="processing_map_data">Processing map data</string>
+
+    <!-- Error messages -->
+    <string name="connection_error">Unable to load content. Check your network connection.</string>
+    <string name="xml_error">Error parsing XML.</string>
+
+    <!-- misc -->
     <string name="sorry">Sorry</string>
-    <string name="map_not_available">Map is not available on this device.</string>
     <string name="ok">OK</string>
-    <string name="select_route">Select a route</string>
+    <string name="no_results">No results found</string>
+    <string name="map_not_available">Map is not available on this device.</string>
 
-
+    <!-- internal tags -->
     <item name="tag_id_1" type="id"></item>
     <item name="tag_id_2" type="id"></item>
     <item name="tag_id_3" type="id"></item>

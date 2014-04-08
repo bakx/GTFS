@@ -21,8 +21,12 @@ import ca.synx.miway.models.StopTime;
 
 public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter<Favorite> {
 
-    public FavoriteItemAdapter(List<Favorite> list, int resourceId, boolean showNextIcon, Context context) {
-        super(list, resourceId, showNextIcon, context);
+    private Context mContext;
+
+    public FavoriteItemAdapter(Context context, List<Favorite> list, int resourceId, boolean showNextIcon) {
+        super(context, list, resourceId, showNextIcon);
+
+        this.mContext = context;
     }
 
     @Override
@@ -54,11 +58,8 @@ public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter
             holder = (Holder) v.getTag(R.id.tag_id_1);
         }
 
-        // Get position of list item.
+        // Get Favorite object from list.
         favorite = mList.get(position);
-
-        // Update tag of view with object reference of object T
-        v.setTag(R.id.tag_id_2, favorite);
 
         // Update title of the view item.
         holder.title.setText(favorite.getTitle());
@@ -66,6 +67,9 @@ public class FavoriteItemAdapter<Favorite extends IFavorite> extends BaseAdapter
 
         if (favorite.getNearestStopTimes() != null)
             displayNearestStopTimes(holder, favorite.getNearestStopTimes());
+
+        // Update tag of view with object reference of object T
+        v.setTag(R.id.tag_id_2, favorite);
 
         return v;
     }

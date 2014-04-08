@@ -40,6 +40,8 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
 
+    private ProgressDialog mProgressDialog;
+
     private Stop mStop;
     private Favorite mFavorite;
 
@@ -47,8 +49,6 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
     private TextView mStopName;
     private ListView mNextStopTimesListView;
     private GridView mStopTimesGridView;
-
-    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +63,8 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
             mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
             mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
         }
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -94,10 +96,6 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
         // Execute task.
         new StopTimesTask(mContext, this, mStorageHandler).execute(mStop);
-
-
-// To dismiss the dialog
-
     }
 
     @Override
@@ -174,7 +172,7 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
         }
 
         // Set adapter that loads the list view.
-        SingleItemAdapter adapter = new SingleItemAdapter<StopTime>(stopTimes, R.layout.listview_item_single, false, mContext);
+        SingleItemAdapter adapter = new SingleItemAdapter<StopTime>(mContext, stopTimes, R.layout.listview_item_single, false);
         mStopTimesGridView.setAdapter(adapter);
 
         // Execute another ASyncTask that calculates the next stop times.
@@ -183,7 +181,7 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
     @Override
     public void onNextStopTimesTaskComplete(List<StopTime> nextStopTimes) {
-        SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(nextStopTimes, R.layout.listview_item_single, false, mContext);
+        SingleItemAdapter<StopTime> adapter = new SingleItemAdapter<StopTime>(mContext, nextStopTimes, R.layout.listview_item_single, false);
         mNextStopTimesListView.setAdapter(adapter);
 
         // This function is called latest. Once this is complete, the process loading dialog can be dismissed.

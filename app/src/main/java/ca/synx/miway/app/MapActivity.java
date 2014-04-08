@@ -10,6 +10,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -30,7 +31,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
 
-import ca.synx.miway.adapters.SingleItemAdapter;
+import ca.synx.miway.adapters.SpinnerItemAdapter;
 import ca.synx.miway.interfaces.IRoutesTask;
 import ca.synx.miway.interfaces.IStopsTask;
 import ca.synx.miway.models.Route;
@@ -46,12 +47,16 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
+
+    private ProgressDialog mProgressDialog;
     private GoogleMap mGoogleMap;
+
     private LocationListener mLocationListener;
+    private boolean mLocationFix = false;
+
     private List<Route> mRoutes;
     private List<Stop> mStops;
-    private boolean mLocationFix = false;
-    private ProgressDialog mProgressDialog;
+    private Route mRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +78,9 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
             alertDialog.show();
             return;
         }
+
+        Intent intent = getIntent();
+        mRoute = (Route) intent.getSerializableExtra("routeData");
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -141,11 +149,9 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
             }
 
             public void onProviderEnabled(String provider) {
-                Toast.makeText(mContext, "GPS is Enabled", Toast.LENGTH_SHORT);
             }
 
             public void onProviderDisabled(String provider) {
-                Toast.makeText(mContext, "GPS is Disabled", Toast.LENGTH_SHORT);
             }
         };
 
@@ -159,12 +165,19 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
     public void onRoutesTaskComplete(List<Route> routes) {
         mRoutes = routes;
 
-        SingleItemAdapter<Route> mRouteAdapter = new SingleItemAdapter<Route>(mRoutes, R.layout.spinner_item_single, false, mContext);
+        SpinnerItemAdapter<Route> mRouteAdapter = new SpinnerItemAdapter<Route>(mContext, mRoutes, R.layout.spinner_item_single);
         getSupportActionBar().setListNavigationCallbacks(mRouteAdapter, this);
+
+        if (mRoute != null)
+            getSupportActionBar().setSelectedNavigationItem(routes.indexOf(mRoute));
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
+
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(getString(R.string.processing_map_data));
+        mProgressDialog.show();
 
         Route route = mRoutes.get(itemPosition);
         new RouteStopsTask(this, mStorageHandler).execute(route);
@@ -178,15 +191,13 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
         drawMarkers();
     }
 
-
     protected void drawMarkers() {
 
         int progress = 0;
 
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage(getString(R.string.processing_map_data));
         mProgressDialog.setProgress(progress);
         mProgressDialog.setMax(mStops.size());
+
         if (!mProgressDialog.isShowing())
             mProgressDialog.show();
 
