@@ -37,19 +37,19 @@ import ca.synx.miway.tasks.RoutesTask;
 import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
-public class MainActivity extends ActionBarActivity implements IFavoritesTask, IRoutesTask, IDataUpdate, SearchView.OnQueryTextListener {
+public class MainActivity extends ActionBarActivity implements IFavoritesTask, IRoutesTask, IDataUpdate, TabHost.OnTabChangeListener, SearchView.OnQueryTextListener {
 
+    private static String sFavoriteTab = "tab_favorites";
+    private static String sRouteTab = "tab_routes";
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
-
     private ProgressDialog mProgressDialog;
-
     private FavoriteItemAdapter<Favorite> mFavoritesAdapter;
     private RouteAdapter<Route> mRoutesAdapter;
-
     private SearchView mSearchView;
-
+    private MenuItem mRefreshMenuItem;
+    private MenuItem mSearchMenuItem;
     private TabHost mTabHost;
     private ListView mFavoritesListView;
     private ListView mRoutesListView;
@@ -63,8 +63,13 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         mDatabaseHandler = new DatabaseHandler(this);
         mStorageHandler = new StorageHandler(mDatabaseHandler);
 
-        // Init tabs
-        initializeTabs();
+        // Set up class..
+        mTabHost = (TabHost) findViewById(R.id.tabHost);
+        mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
+        mRoutesListView = (ListView) findViewById(R.id.routesListView);
+
+        // Set up tabs.
+        setupTabs();
     }
 
     @Override
@@ -75,10 +80,6 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage(getString(R.string.loading_routes));
         mProgressDialog.show();
-
-        // Set up class..
-        mFavoritesListView = (ListView) findViewById(R.id.favoritesListView);
-        mRoutesListView = (ListView) findViewById(R.id.routesListView);
 
         // Prepare favorites.
         new FavoritesTask(mDatabaseHandler, this).execute();
@@ -92,8 +93,11 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        mSearchMenuItem = menu.findItem(R.id.action_search);
+        mRefreshMenuItem = menu.findItem(R.id.action_refresh);
+
+        // Set up search.
+        mSearchView = (SearchView) MenuItemCompat.getActionView(mSearchMenuItem);
         mSearchView.setOnQueryTextListener(this);
 
         return super.onCreateOptionsMenu(menu);
@@ -103,6 +107,8 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
+            // Create a new intent that starts Google Maps.
             case R.id.action_map:
 
                 // Create new intent.
@@ -114,13 +120,20 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
             case R.id.action_refresh:
 
-                // Display loading dialog.
-                mProgressDialog = new ProgressDialog(this);
-                mProgressDialog.setMessage(getString(R.string.loading_stop_times));
-                mProgressDialog.show();
+                // Refresh the favorites. If the favorite object gets more complicated, it might be better
+                // to fetch the StopTimes from the favorites adapter and recalculate the 'nearest' stop times
+                // from that list. For this application this would be overkill.
+                if (!mFavoritesAdapter.isEmpty()) {
 
-                // Prepare favorites.
-                new FavoritesTask(mDatabaseHandler, this).execute();
+                    // Display loading dialog.
+                    mProgressDialog = new ProgressDialog(this);
+                    mProgressDialog.setMessage(getString(R.string.loading_stop_times));
+                    mProgressDialog.show();
+
+                    // Prepare favorites.
+                    new FavoritesTask(mDatabaseHandler, this).execute();
+                }
+
                 return true;
 
             default:
@@ -129,24 +142,25 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     }
 
     // Load Tabs
-    protected void initializeTabs() {
+    protected void setupTabs() {
 
-        mTabHost = (TabHost) findViewById(R.id.tabHost);
         mTabHost.setup();
 
         mTabHost.addTab(
-                mTabHost.newTabSpec("tab_favorites")
+                mTabHost.newTabSpec(sFavoriteTab)
                         .setContent(R.id.tab1)
                         .setIndicator(getResources().getString(R.string.tab_favorites)
                         )
         );
 
         mTabHost.addTab(
-                mTabHost.newTabSpec("tab_routes")
+                mTabHost.newTabSpec(sRouteTab)
                         .setContent(R.id.tab2)
                         .setIndicator(getResources().getString(R.string.tab_routes)
                         )
         );
+
+        mTabHost.setOnTabChangedListener(this);
     }
 
     @Override
@@ -224,6 +238,12 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
     }
 
     @Override
+    public void onTabChanged(String s) {
+        mSearchMenuItem.setVisible(s.toString().equals(sRouteTab));
+        mRefreshMenuItem.setVisible(s.toString().equals(sFavoriteTab));
+    }
+
+    @Override
     public boolean onQueryTextSubmit(String s) {
         return false;
     }
@@ -233,4 +253,6 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         mRoutesAdapter.getFilter().filter(s);
         return false;
     }
+
+
 }

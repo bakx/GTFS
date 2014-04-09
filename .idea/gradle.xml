@@ -7,8 +7,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="E:\Projects\SYNX\Apps\MiWay" />
-            <option value="E:\Projects\SYNX\Apps\MiWay\app" />
+            <option value="D:\Projects\GTFS" />
+            <option value="D:\Projects\GTFS\app" />
           </set>
         </option>
       </GradleProjectSettings>

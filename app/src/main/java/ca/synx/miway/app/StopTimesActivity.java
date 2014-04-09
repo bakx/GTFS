@@ -63,8 +63,6 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
             mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
             mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
         }
-
-        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -136,6 +134,7 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle presses on the action bar items
         switch (item.getItemId()) {
+
             case R.id.action_add_favorite:
 
                 mStorageHandler.saveFavorite(mFavorite);
@@ -186,5 +185,10 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
         // This function is called latest. Once this is complete, the process loading dialog can be dismissed.
         mProgressDialog.dismiss();
+    }
+
+    @Override
+    public void onBackPressed() {
+        this.finish();
     }
 }
