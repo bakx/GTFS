@@ -63,6 +63,8 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
             mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
             mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
         }
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
     @Override
@@ -132,8 +134,13 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+
         // Handle presses on the action bar items
         switch (item.getItemId()) {
+
+            case android.R.id.home:
+                this.finish();
+                return true;
 
             case R.id.action_add_favorite:
 

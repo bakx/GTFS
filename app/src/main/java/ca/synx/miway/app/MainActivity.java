@@ -212,6 +212,9 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
                 if (route == null)
                     return;
 
+                // Clear focus from the search view.
+                mSearchView.cancelPendingInputEvents();
+
                 // Create new intent.
                 Intent intent = new Intent(mContext, StopsActivity.class);
 
@@ -239,12 +242,18 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
     @Override
     public void onTabChanged(String s) {
+
+        // Enable the 'Refresh' icon if the Favorites tab is selected and the adapter is not empty.
+        mRefreshMenuItem.setVisible(s.toString().equals(sFavoriteTab) && !mFavoritesAdapter.isEmpty());
+
+        // Enable the 'Search' icon if the Routes tab is selected.
         mSearchMenuItem.setVisible(s.toString().equals(sRouteTab));
-        mRefreshMenuItem.setVisible(s.toString().equals(sFavoriteTab));
     }
 
     @Override
     public boolean onQueryTextSubmit(String s) {
+        mSearchView.clearFocus();
+        mSearchView.cancelPendingInputEvents();
         return false;
     }
 
@@ -253,6 +262,4 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         mRoutesAdapter.getFilter().filter(s);
         return false;
     }
-
-
 }

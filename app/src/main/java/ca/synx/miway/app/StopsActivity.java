@@ -73,6 +73,30 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+
+        mContext = this;
+        mDatabaseHandler = new DatabaseHandler(this);
+        mStorageHandler = new StorageHandler(mDatabaseHandler);
+
+        // Display loading dialog.
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setMessage(getString(R.string.loading_stops));
+        mProgressDialog.show();
+
+        // Update the title of the activity.
+        setTitle(String.format(
+                getString(R.string.stops),
+                mRoute.getTitle(),
+                mRoute.getSubtitle()
+        ));
+
+        // Execute task.
+        new RouteStopsTask(this, mStorageHandler).execute(mRoute);
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.stops, menu);
@@ -82,6 +106,23 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
         mSearchView.setOnQueryTextListener(this);
 
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putSerializable(ROUTE_DATA, mRoute);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
     }
 
     @Override
@@ -111,48 +152,6 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-
-        mContext = this;
-        mDatabaseHandler = new DatabaseHandler(this);
-        mStorageHandler = new StorageHandler(mDatabaseHandler);
-
-        // Display loading dialog.
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage(getString(R.string.loading_stops));
-        mProgressDialog.show();
-
-        // Update the title of the activity.
-        setTitle(String.format(
-                getString(R.string.stops),
-                mRoute.getTitle(),
-                mRoute.getSubtitle()
-        ));
-
-        // Execute task.
-        new RouteStopsTask(this, mStorageHandler).execute(mRoute);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
-        savedInstanceState.putSerializable(ROUTE_DATA, mRoute);
-
-        // Always call the superclass so it can save the view hierarchy state
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        // Always call the superclass so it can restore the view hierarchy
-        super.onRestoreInstanceState(savedInstanceState);
-
-        // Restore state members from saved instance
-        mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
-    }
-
-
-    @Override
     public void onStopsTaskComplete(List<Stop> stops) {
 
         // Check if stops object contain data.
@@ -165,6 +164,9 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
         mStopsListView.setAdapter(mStopsAdapter);
         mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                // Clear focus from the search view.
+                mSearchView.cancelPendingInputEvents();
 
                 // Get tag from clicked view.
                 Stop stop = (Stop) view.getTag(R.id.tag_id_2);
@@ -186,6 +188,8 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
 
     @Override
     public boolean onQueryTextSubmit(String s) {
+        mSearchView.clearFocus();
+        mSearchView.cancelPendingInputEvents();
         return false;
     }
 
