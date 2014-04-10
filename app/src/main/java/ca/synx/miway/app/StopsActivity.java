@@ -99,7 +99,7 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
                 Intent intent = new Intent(mContext, MapActivity.class);
 
                 // Pass route to map.
-                intent.putExtra(sROUTE_DATA, mRoute);
+                intent.putExtra("routeData", mRoute);
 
                 // Start the intent.
                 startActivity(intent);
@@ -166,6 +166,9 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
         mStopsListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
+                // Clear focus from the search view.
+                mSearchView.cancelPendingInputEvents();
+
                 // Get tag from clicked view.
                 Stop stop = (Stop) view.getTag(R.id.tag_id_2);
 
@@ -186,6 +189,8 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
 
     @Override
     public boolean onQueryTextSubmit(String s) {
+        mSearchView.clearFocus();
+        mSearchView.cancelPendingInputEvents();
         return false;
     }
 
