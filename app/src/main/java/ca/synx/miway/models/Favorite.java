@@ -9,10 +9,9 @@ package ca.synx.miway.models;
 import java.io.Serializable;
 import java.util.List;
 
-import ca.synx.miway.interfaces.IFavorite;
 import ca.synx.miway.util.StorageHandler;
 
-public class Favorite implements Serializable, IFavorite {
+public class Favorite implements Serializable {
 
     private int mId;
     private Stop mStop;
@@ -45,16 +44,6 @@ public class Favorite implements Serializable, IFavorite {
 
     public void setId(int id) {
         this.mId = id;
-    }
-
-    /* <Implementation of interface IFavorite> */
-    public String getTitle() {
-        return mStop.getRoute().getFull();
-    }
-    /* </Implementation of interface IDBItem> */
-
-    public String getSubtitle() {
-        return mStop.getStopName();
     }
 
     public List<StopTime> getStopTimes() {

@@ -11,4 +11,17 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <!-- Route Item -->
+    <style name="ItemRouteNumberTextView">
+        <item name="android:textColor">#ff424242</item>
+    </style>
+
+    <style name="ItemRouteNameTextView">
+        <item name="android:textColor">#ff424242</item>
+    </style>
+
+    <style name="ItemRouteHeadingTextView">
+        <item name="android:textColor">#ff424242</item>
+    </style>
+
 </resources>

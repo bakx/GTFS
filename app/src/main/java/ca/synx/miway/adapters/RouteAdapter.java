@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -28,10 +27,9 @@ public class RouteAdapter<T extends Route> extends ArrayAdapter<Route> implement
     public List<Route> mList;
     public List<Route> mFilteredList;
     public int mResourceId;
-    public boolean mShowNextIcon = true;
     public Filter mFilter;
 
-    public RouteAdapter(Context context, List<Route> list, int resourceId, boolean showNextIcon) {
+    public RouteAdapter(Context context, List<Route> list, int resourceId) {
         super(context, resourceId, list);
 
         this.mContext = context;
@@ -39,7 +37,6 @@ public class RouteAdapter<T extends Route> extends ArrayAdapter<Route> implement
         this.mList = list;
         this.mFilteredList = list;
         this.mResourceId = resourceId;
-        this.mShowNextIcon = showNextIcon;
     }
 
     public Filter getFilter() {
@@ -59,47 +56,44 @@ public class RouteAdapter<T extends Route> extends ArrayAdapter<Route> implement
         return mFilteredList.get(position);
     }
 
+    @Override
     public View getView(int position, View view, ViewGroup parent) {
 
-        Holder holder = new Holder();
+        ViewHolder viewHolder = new ViewHolder();
 
         if (view == null) {
             LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(mResourceId, null);
 
-            if (!mShowNextIcon) {
-                ImageView imageView = (ImageView) view.findViewById(R.id.nextitem);
-                imageView.setVisibility(View.GONE);
-            }
-
-            holder.title = (TextView) view.findViewById(R.id.title);
-            holder.subtitle = (TextView) view.findViewById(R.id.subtitle);
+            viewHolder.numberTextView = (TextView) view.findViewById(R.id.numberTextView);
+            viewHolder.nameTextView = (TextView) view.findViewById(R.id.nameTextView);
+            viewHolder.headingTextView = (TextView) view.findViewById(R.id.headingTextView);
 
             // Cache holder for performance reasons.
-            view.setTag(R.id.tag_id_1, holder);
+            view.setTag(viewHolder);
         } else {
             // Retrieve holder from Cache.
-            holder = (Holder) view.getTag(R.id.tag_id_1);
+            viewHolder = (ViewHolder) view.getTag();
         }
 
-        // Get a reference to the object that's placed in the ArrayAdapter<T> at a position specified
-        // by Android (ListView control takes care of handling what position should be shown).
-
+        // Get object of list item.
         Route route = getItem(position);
 
-        // Update tag of view with object reference of object T
+        // Attach Route object to View so it can be retrieved from other areas
         view.setTag(R.id.tag_id_2, route);
 
         // Update titles of the view item.
-        holder.title.setText(route.getTitle());
-        holder.subtitle.setText(route.getSubtitle());
+        viewHolder.numberTextView.setText(route.getRouteNumber());
+        viewHolder.nameTextView.setText(route.getRouteName());
+        viewHolder.headingTextView.setText(route.getRouteHeading());
 
         return view;
     }
 
-    private static class Holder {
-        public TextView title;
-        public TextView subtitle;
+    private static class ViewHolder {
+        public TextView numberTextView;
+        public TextView nameTextView;
+        public TextView headingTextView;
     }
 
     private class RouteFilter extends Filter {

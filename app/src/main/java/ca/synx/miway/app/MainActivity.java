@@ -167,13 +167,17 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
     @Override
     public void onFavoritesTaskComplete(List<Favorite> favorites) {
-        mFavoritesAdapter = new FavoriteItemAdapter<Favorite>(mContext, favorites, R.layout.listview_item_favorite, true);
+        mFavoritesAdapter = new FavoriteItemAdapter<Favorite>(mContext, favorites, R.layout.listview_item_favorite);
         mFavoritesListView.setAdapter(mFavoritesAdapter);
         mFavoritesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
                 // Get tag from clicked view.
                 Favorite favorite = (Favorite) view.getTag(R.id.tag_id_2);
+
+                // No point in starting a new intent without a favorite
+                if (favorite == null)
+                    return;
 
                 // Create new intent.
                 Intent intent = new Intent(mContext, StopTimesActivity.class);
@@ -201,7 +205,7 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
             return;
         }
 
-        mRoutesAdapter = new RouteAdapter<Route>(mContext, routes, R.layout.listview_item_basic, true);
+        mRoutesAdapter = new RouteAdapter<Route>(mContext, routes, R.layout.item_route);
         mRoutesListView.setAdapter(mRoutesAdapter);
         mRoutesListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -263,6 +267,4 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
         mRoutesAdapter.getFilter().filter(s);
         return false;
     }
-
-
 }
