@@ -33,7 +33,7 @@ import ca.synx.miway.util.StorageHandler;
 
 public class StopsActivity extends ActionBarActivity implements IStopsTask, SearchView.OnQueryTextListener {
 
-    static final String ROUTE_DATA = "routeData";
+    static final String sROUTE_DATA = "routeData";
 
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
@@ -63,10 +63,10 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
 
             // Get the message from the intent
             Intent intent = getIntent();
-            mRoute = (Route) intent.getSerializableExtra(ROUTE_DATA);
+            mRoute = (Route) intent.getSerializableExtra(sROUTE_DATA);
 
         } else {
-            mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
+            mRoute = (Route) savedInstanceState.getSerializable(sROUTE_DATA);
         }
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -99,7 +99,7 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
                 Intent intent = new Intent(mContext, MapActivity.class);
 
                 // Pass route to map.
-                intent.putExtra("routeData", mRoute);
+                intent.putExtra(sROUTE_DATA, mRoute);
 
                 // Start the intent.
                 startActivity(intent);
@@ -137,7 +137,7 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
-        savedInstanceState.putSerializable(ROUTE_DATA, mRoute);
+        savedInstanceState.putSerializable(sROUTE_DATA, mRoute);
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -148,7 +148,7 @@ public class StopsActivity extends ActionBarActivity implements IStopsTask, Sear
         super.onRestoreInstanceState(savedInstanceState);
 
         // Restore state members from saved instance
-        mRoute = (Route) savedInstanceState.getSerializable(ROUTE_DATA);
+        mRoute = (Route) savedInstanceState.getSerializable(sROUTE_DATA);
     }
 
 

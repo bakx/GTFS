@@ -18,7 +18,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -42,8 +41,10 @@ import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
 public class MapActivity extends ActionBarActivity implements IRoutesTask, IStopsTask, ActionBar.OnNavigationListener {
+    static final String sSTOP_DATA = "stopData";
+    static final String sROUTE_DATA = "routeData";
 
-    private static int mZoomLevel = 15;
+    private static int mZoomLevel = 12;
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
@@ -52,11 +53,13 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
     private GoogleMap mGoogleMap;
 
     private LocationListener mLocationListener;
-    private boolean mLocationFix = false;
+    private SpinnerItemAdapter<Route> mRouteAdapter;
 
     private List<Route> mRoutes;
-    private List<Stop> mStops;
     private Route mRoute;
+    private List<Stop> mStops;
+    private Stop mStop;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +83,8 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
         }
 
         Intent intent = getIntent();
-        mRoute = (Route) intent.getSerializableExtra("routeData");
+        mRoute = (Route) intent.getSerializableExtra(sROUTE_DATA);
+        mStop = (Stop) intent.getSerializableExtra(sSTOP_DATA);
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -116,11 +120,18 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
         // Location awareness.
         //
 
-        getLocation();
+        // If a stop is not specified, get the user's location from the GPS.
+        if (mStop == null)
+            getLocation();
 
         //
         // Get route data.
         //
+
+        mProgressDialog = new ProgressDialog(mContext);
+        mProgressDialog.setMessage(getString(R.string.loading));
+        mProgressDialog.show();
+        mProgressDialog.setCancelable(false);
 
         new RoutesTask(this, mStorageHandler).execute();
     }
@@ -128,21 +139,20 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
     protected void getLocation() {
 
         // Acquire a reference to the system Location Manager
-        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        final LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
         mLocationListener = new LocationListener() {
+
             public void onLocationChanged(Location location) {
 
-                if (!mLocationFix) {
-                    Toast.makeText(mContext, "onLocationChanged called", Toast.LENGTH_SHORT);
+                // Move camera to position mentioned by the GPS.
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                new LatLng(location.getLatitude(), location.getLongitude()), mZoomLevel)
+                );
 
-                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                    new LatLng(location.getLatitude(), location.getLongitude()), mZoomLevel)
-                    );
-
-                    mLocationFix = true;
-                }
+                // Stop listening for updates.
+                locationManager.removeUpdates(this);
             }
 
             public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -157,38 +167,21 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER, 0, 0, mLocationListener
+                LocationManager.GPS_PROVIDER, 60, 50, mLocationListener
         );
-    }
-
-    @Override
-    public void onRoutesTaskComplete(List<Route> routes) {
-        mRoutes = routes;
-
-        SpinnerItemAdapter<Route> mRouteAdapter = new SpinnerItemAdapter<Route>(mContext, mRoutes, R.layout.spinner_item_single);
-        getSupportActionBar().setListNavigationCallbacks(mRouteAdapter, this);
-
-        if (mRoute != null)
-            getSupportActionBar().setSelectedNavigationItem(routes.indexOf(mRoute));
     }
 
     @Override
     public boolean onNavigationItemSelected(int itemPosition, long itemId) {
 
-        mProgressDialog = new ProgressDialog(mContext);
-        mProgressDialog.setMessage(getString(R.string.processing_map_data));
-        mProgressDialog.show();
+        mProgressDialog.setMessage(getString(R.string.loading_stops));
+
+        // Clear previous markers.
+        mGoogleMap.clear();
 
         Route route = mRoutes.get(itemPosition);
         new RouteStopsTask(this, mStorageHandler).execute(route);
         return true;
-    }
-
-    @Override
-    public void onStopsTaskComplete(List<Stop> stops) {
-        mStops = stops;
-
-        drawMarkers();
     }
 
     protected void drawMarkers() {
@@ -197,12 +190,7 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
 
         mProgressDialog.setProgress(progress);
         mProgressDialog.setMax(mStops.size());
-
-        if (!mProgressDialog.isShowing())
-            mProgressDialog.show();
-
-        // Clear previous markers.
-        mGoogleMap.clear();
+        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 
         // Draw all stops for selected route.
         for (Stop stop : mStops) {
@@ -215,14 +203,55 @@ public class MapActivity extends ActionBarActivity implements IRoutesTask, IStop
                 );
 
                 mProgressDialog.setProgress(progress++);
+
             } catch (Exception e) {
                 Log.e("MapActivity:drawMarkers", "" + e.getMessage());
                 e.printStackTrace();
             }
         }
 
+        // Move the camera to the position of the stop (if set).
+        if (mStop != null) {
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(mStop.getStopLat(), mStop.getStopLon()), mZoomLevel));
+
+            mStop = null;
+        }
+
         // Dismiss the progress dialog (if any)
-        if (mProgressDialog != null && mProgressDialog.isShowing())
+        if (mProgressDialog != null)
             mProgressDialog.dismiss();
+    }
+
+    private int getRoutePosition() {
+        if (mRoute != null && mRouteAdapter != null && mRouteAdapter.getCount() > 0) {
+            for (int i = 0; i < mRouteAdapter.getCount(); i++) {
+
+                Route route = mRouteAdapter.getItem(i);
+
+                if (route.isEqual(mRoute))
+                    return i;
+            }
+        }
+
+        return -1;
+    }
+
+    @Override
+    public void onRoutesTaskComplete(List<Route> routes) {
+        mRoutes = routes;
+
+        mRouteAdapter = new SpinnerItemAdapter<Route>(mContext, mRoutes, R.layout.spinner_item_single);
+        getSupportActionBar().setListNavigationCallbacks(mRouteAdapter, this);
+
+        // If mRoute is set, show this location by default.
+        getSupportActionBar().setSelectedNavigationItem(getRoutePosition());
+    }
+
+    @Override
+    public void onStopsTaskComplete(List<Stop> stops) {
+        mStops = stops;
+
+        drawMarkers();
     }
 }

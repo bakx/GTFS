@@ -33,8 +33,8 @@ import ca.synx.miway.util.DatabaseHandler;
 import ca.synx.miway.util.StorageHandler;
 
 public class StopTimesActivity extends ActionBarActivity implements IStopTimesTask, INextStopTimesTask {
-    static final String FAVORITE_DATA = "favoriteData";
-    static final String STOP_DATA = "stopData";
+    static final String sFAVORITE_DATA = "favoriteData";
+    static final String sSTOP_DATA = "stopData";
 
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
@@ -58,10 +58,10 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
         // Resume?
         if (savedInstanceState == null) {
             Intent intent = getIntent();
-            mStop = (Stop) intent.getSerializableExtra(STOP_DATA);
+            mStop = (Stop) intent.getSerializableExtra(sSTOP_DATA);
         } else {
-            mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
-            mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
+            mStop = (Stop) savedInstanceState.getSerializable(sSTOP_DATA);
+            mFavorite = (Favorite) savedInstanceState.getSerializable(sFAVORITE_DATA);
         }
     }
 
@@ -98,22 +98,15 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putSerializable(STOP_DATA, mStop);
-        savedInstanceState.putSerializable(FAVORITE_DATA, mFavorite);
+        savedInstanceState.putSerializable(sSTOP_DATA, mStop);
+        savedInstanceState.putSerializable(sFAVORITE_DATA, mFavorite);
         super.onSaveInstanceState(savedInstanceState);
     }
 
     public void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        mStop = (Stop) savedInstanceState.getSerializable(STOP_DATA);
-        mFavorite = (Favorite) savedInstanceState.getSerializable(FAVORITE_DATA);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.stoptimes, menu);
-        return super.onCreateOptionsMenu(menu);
+        mStop = (Stop) savedInstanceState.getSerializable(sSTOP_DATA);
+        mFavorite = (Favorite) savedInstanceState.getSerializable(sFAVORITE_DATA);
     }
 
     @Override
@@ -128,6 +121,14 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
         }
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.stoptimes, menu);
+
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -152,6 +153,19 @@ public class StopTimesActivity extends ActionBarActivity implements IStopTimesTa
 
                 Toast.makeText(mContext, R.string.removed_favorites, Toast.LENGTH_LONG).show();
                 return true;
+
+            case R.id.action_map:
+
+                // Create new intent.
+                Intent intent = new Intent(mContext, MapActivity.class);
+
+                // Pass stop to map.
+                intent.putExtra(sSTOP_DATA, mStop);
+
+                // Start the intent.
+                startActivity(intent);
+                return true;
+
             default:
                 return super.onOptionsItemSelected(item);
         }

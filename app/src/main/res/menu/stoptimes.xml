@@ -19,4 +19,9 @@
         android:title="@string/remove_favorites"
         app:showAsAction="ifRoom" />
 
+    <item
+        android:id="@+id/action_map"
+        android:icon="@drawable/ic_action_map"
+        android:title="@string/map"
+        app:showAsAction="ifRoom" />
 </menu>

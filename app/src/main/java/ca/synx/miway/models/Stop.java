@@ -17,6 +17,7 @@ public class Stop implements IListItem, Serializable {
     private double mStopLon;
     private int mStopSequence;
     private Route mRoute;
+    private int mHashCode;
 
     public Stop() {
     }
@@ -69,5 +70,15 @@ public class Stop implements IListItem, Serializable {
     // Misc.
     public String getFull() {
         return this.mStopId + " - " + this.mStopName;
+    }
+
+    public int hashCode() {
+
+        if (mHashCode != -1)
+            mHashCode = mStopId.hashCode() +
+                    mStopName.hashCode() +
+                    mRoute.hashCode();
+
+        return mHashCode;
     }
 }

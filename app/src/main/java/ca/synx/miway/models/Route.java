@@ -15,6 +15,7 @@ public class Route implements IListItem, ISpinnerItem, Serializable {
     private String mRouteNumber;
     private String mRouteName;
     private String mRouteHeading;
+    private int mHashCode = -1;
 
     public Route(String routeNumber, String routeName, String routeHeading) {
         this.mRouteNumber = routeNumber;
@@ -48,5 +49,21 @@ public class Route implements IListItem, ISpinnerItem, Serializable {
 
     public String getFull() {
         return this.mRouteNumber + this.mRouteHeading.substring(0, 1) + " - " + this.mRouteName;
+    }
+
+    public int hashCode() {
+
+        if (mHashCode != -1)
+            mHashCode = mRouteNumber.hashCode() +
+                    mRouteHeading.hashCode() +
+                    mRouteName.hashCode();
+
+        return mHashCode;
+    }
+
+    public boolean isEqual(Route route) {
+        boolean isMatch = (route.hashCode() == this.hashCode());
+
+        return isMatch;
     }
 }

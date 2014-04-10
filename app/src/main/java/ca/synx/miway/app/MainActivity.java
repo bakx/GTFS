@@ -41,9 +41,11 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
     private static String sFavoriteTab = "tab_favorites";
     private static String sRouteTab = "tab_routes";
+
     private Context mContext;
     private DatabaseHandler mDatabaseHandler;
     private StorageHandler mStorageHandler;
+
     private ProgressDialog mProgressDialog;
     private FavoriteItemAdapter<Favorite> mFavoritesAdapter;
     private RouteAdapter<Route> mRoutesAdapter;
@@ -245,6 +247,7 @@ public class MainActivity extends ActionBarActivity implements IFavoritesTask, I
 
     @Override
     public boolean onQueryTextSubmit(String s) {
+        mSearchView.clearFocus();
         return false;
     }
 
